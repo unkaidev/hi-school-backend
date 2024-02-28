@@ -1,6 +1,7 @@
 package phongvan.hischoolbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,7 @@ public class Semester {
 
     @ManyToOne
     @JoinColumn(name = "_school_year_id")
-    @JsonManagedReference
+    @JsonProperty
     private SchoolYear schoolYear;
 
 }

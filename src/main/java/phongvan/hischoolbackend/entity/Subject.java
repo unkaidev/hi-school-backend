@@ -1,7 +1,9 @@
 package phongvan.hischoolbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,11 +27,11 @@ public class Subject {
 
     @ManyToOne
     @JoinColumn(name = "_semester_id")
-    @JsonManagedReference
+    @JsonProperty
     private Semester semester;
 
     @OneToMany(mappedBy = "subject")
-    @JsonBackReference
+    @JsonIgnore
     private Set<Score> scores;
 
 }

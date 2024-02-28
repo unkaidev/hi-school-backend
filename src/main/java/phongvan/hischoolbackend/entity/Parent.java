@@ -21,7 +21,7 @@ public class Parent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne(mappedBy = "parent", cascade = CascadeType.ALL)
+    @OneToOne
     private User user;
 
     private String firstname;

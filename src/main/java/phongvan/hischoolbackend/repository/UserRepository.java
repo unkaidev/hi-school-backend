@@ -1,15 +1,23 @@
-package phongvan.hischoolbackend.repository;
+package phongvan.hischoolbackend.Repository;
 
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import phongvan.hischoolbackend.entity.User;
 
 import java.util.Optional;
+@Repository
+public interface UserRepository extends JpaRepository<User, Integer> {
+    Optional<User> findByUsername(String username);
 
-public interface UserRepository extends JpaRepository<User,Integer> {
+    Boolean existsByUsername(String username);
 
-    Optional<User> findByEmail(String Email);
+    Boolean existsByEmail(String email);
+    Boolean existsByPhone(String phone);
 
-    Optional<User> findByPhone(String Phone);
+    Page<User> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
 
-
+    User findFirstByOrderByIdDesc();
 }

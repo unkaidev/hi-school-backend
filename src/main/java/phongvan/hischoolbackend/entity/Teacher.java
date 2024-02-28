@@ -1,10 +1,13 @@
 package phongvan.hischoolbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.sql.Date;
 
 @Data
 @Builder
@@ -21,6 +24,17 @@ public class Teacher {
 
     private String lastname;
 
-    @OneToOne(mappedBy = "teacher", cascade = CascadeType.ALL)
+    @OneToOne
     private User user;
+
+    private String citizenId;
+    private Date issuedDate;
+    @OneToOne
+    private IssuedPlace issuedPlace;
+    @ManyToOne
+    @JsonManagedReference
+    private Address permanentAddress;
+    @ManyToOne
+    @JsonManagedReference
+    private Address contactAddress;
 }

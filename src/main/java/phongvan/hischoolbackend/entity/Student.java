@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.sql.Blob;
 
 import java.sql.Date;
@@ -24,7 +25,7 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne(mappedBy = "student", cascade = CascadeType.ALL)
+    @OneToOne
     private User user;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -52,9 +53,15 @@ public class Student {
     private String ethnicity;
     private String citizenId;
     private Date issuedDate;
-    private String issuedPlace;
-    private String permanentAddress;
-    private String contactAddress;
+    @ManyToOne
+    @JsonManagedReference
+    private IssuedPlace issuedPlace;
+    @ManyToOne
+    @JsonManagedReference
+    private Address permanentAddress;
+    @ManyToOne
+    @JsonManagedReference
+    private Address contactAddress;
 
     @ManyToMany
             (fetch = FetchType.LAZY,

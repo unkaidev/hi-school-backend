@@ -1,52 +1,81 @@
-package phongvan.hischoolbackend.controller;
+package phongvan.hischoolbackend.Controller;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import phongvan.hischoolbackend.Payload.Request.UserRequest;
+import phongvan.hischoolbackend.Payload.Response.MessageResponse;
+import phongvan.hischoolbackend.Repository.RoleRepository;
+import phongvan.hischoolbackend.Service.UserService;
+import phongvan.hischoolbackend.entity.Role;
 import phongvan.hischoolbackend.entity.User;
-import phongvan.hischoolbackend.repository.UserRepository;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-@Controller
-@RequiredArgsConstructor
-@RequestMapping("/backend/user")
+@RestController
+@RequestMapping("/api/v1/user")
 public class UserController {
-    private final UserRepository repository;
+    @Autowired
+    UserService userService;
+    @Autowired
+    RoleRepository roleRepository;
+    @GetMapping("/read")
+    public ResponseEntity<MessageResponse> getUserWithPagination(@RequestParam int page, @RequestParam int limit) {
 
+        Page<User> userPage = null;
+        try {
+            userPage = userService.findPaginated(PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "id")));
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "GET DATA SUCCESS", userPage));
 
-    @GetMapping
-    public String showUserPage(Model model) {
-        model.addAttribute("users", repository.findAll());
-
-        return "user";
-    }
-
-    @PostMapping("/create")
-    public String addUser(@ModelAttribute User user){
-        repository.save(user);
-        return "redirect:/backend/user";
-    }
-    @GetMapping("/edit/{id}")
-    public String editUser(@PathVariable int id, Model model){
-        Optional<User> user = repository.findById(id);
-        if (user.isPresent()){
-            model.addAttribute("user",user);
-            return "user-update";
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "SOMETHING WENT WRONG IN SERVER", null));
         }
-        return "user";
-    }
-    @PostMapping("/update")
-    public String updateUser(@ModelAttribute User user){
-        repository.saveAndFlush(user);
-        return "redirect:/backend/user";
-    }
-    @GetMapping("/delete/{id}")
-    public String deleteUser(@PathVariable int id){
-        repository.deleteById(id);
-        return "redirect:/backend/user";
+
     }
 
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<MessageResponse> deleteUser(@PathVariable int id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "DELETE USER SUCCESS", null));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "SOMETHING WENT WRONG IN SERVER", null));
+        }
+    }
 
+    @PutMapping("/update")
+    public ResponseEntity<MessageResponse> updateUser(@RequestBody UserRequest userRequest) {
+        try {
+            User userFind = userService.anUser(userRequest.getUsername()).get();
+            userFind.setGender(userRequest.getGender());
+            Set<Role> newRoles = new HashSet<>();
+            Role newRole = roleRepository.getById(userRequest.getRoleId());
+            newRoles.add(newRole);
+            if (!userFind.getRoles().equals(newRoles)) {
+                userFind.setRoles(newRoles);
+            }
+            userService.updateUser(userFind);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "UPDATE USER SUCCESS", null));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "SOMETHING WENT WRONG IN SERVER", null));
+        }
+    }
 }
