@@ -1,0 +1,32 @@
+@startuml
+
+package phongvan.hischoolbackend.entity {
+    class Schedule {
+        - id: Integer
+        - name: String
+        - semester: Semester
+        - startTime: LocalTime
+        - endTime: LocalTime
+
+        {static} <<ID>> id
+        {static} <<GeneratedValue>> strategy
+        {static} <<ManyToOne>> semester
+        {static} <<JsonManagedReference>> semester
+
+        + Schedule()
+        + Schedule(id: Integer, name: String, semester: Semester, startTime: LocalTime, endTime: LocalTime)
+        + getId(): Integer
+        + setId(id: Integer): void
+        + getName(): String
+        + setName(name: String): void
+        + getSemester(): Semester
+        + setSemester(semester: Semester): void
+        + getStartTime(): LocalTime
+        + setStartTime(startTime: LocalTime): void
+        + getEndTime(): LocalTime
+        + setEndTime(endTime: LocalTime): void
+        + toString(): String
+    }
+}
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+
+package phongvan.hischoolbackend.entity {
+    class Notification {
+        - id: Integer
+        - sender: User
+        - receiver: User
+        - content: String
+        - timestamp: LocalDate
+        - isRead: boolean
+
+        {static} <<ID>> id
+        {static} <<GeneratedValue>> strategy
+        {static} <<ManyToOne>> sender
+        {static} <<ManyToOne>> receiver
+        {static} <<Column>> content
+        {static} <<Column>> timestamp
+        {static} <<Column>> isRead
+
+        + Notification()
+        + Notification(id: Integer, sender: User, receiver: User, content: String, timestamp: LocalDate, isRead: boolean)
+        + getId(): Integer
+        + setId(id: Integer): void
+        + getSender(): User
+        + setSender(sender: User): void
+        + getReceiver(): User
+        + setReceiver(receiver: User): void
+        + getContent(): String
+        + setContent(content: String): void
+        + getTimestamp(): LocalDate
+        + setTimestamp(timestamp: LocalDate): void
+        + isRead(): boolean
+        + setRead(isRead: boolean): void
+    }
+}
+
+@enduml

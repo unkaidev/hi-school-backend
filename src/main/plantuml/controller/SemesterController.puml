@@ -1,0 +1,19 @@
+@startuml
+
+package phongvan.hischoolbackend.Controller {
+    class SemesterController {
+        - semesterService: SemesterService
+        - yearRepository: YearRepository
+        - timeTableService: TimeTableService
+
+        + getAllSemesters(): ResponseEntity<MessageResponse>
+        + getSemesterWithPagination(page: int, limit: int, schoolId: int): ResponseEntity<MessageResponse>
+        + getSemesterWithYearId(yearId: int): ResponseEntity<MessageResponse>
+        + addSemester(semesterRequest: SemesterRequest): ResponseEntity<?>
+        + updateSemester(semesterRequest: SemesterRequest): ResponseEntity<?>
+        + deleteSemester(id: int): ResponseEntity<MessageResponse>
+        - checkExistSemester(semesterName: String, yearName: String, schoolId: Integer): boolean
+    }
+}
+
+@enduml

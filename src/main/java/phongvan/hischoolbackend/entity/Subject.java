@@ -24,7 +24,7 @@ public class Subject {
     private Integer id;
 
     private String name;
-
+    private String grade;
     @ManyToOne
     @JoinColumn(name = "_semester_id")
     @JsonProperty
@@ -34,4 +34,11 @@ public class Subject {
     @JsonIgnore
     private Set<Score> scores;
 
+    @Override
+    public String toString() {
+        return "Subject{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

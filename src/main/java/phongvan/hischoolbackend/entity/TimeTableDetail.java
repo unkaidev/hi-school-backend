@@ -7,20 +7,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "_teaching")
-public class Teaching {
+@Table(name = "_time_table_detail")
+public class TimeTableDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Date teachingDate;
+    @ManyToOne
+    @JoinColumn(name = "_timetable_id")
+    @JsonManagedReference
+    private TimeTable timeTable;
 
     @ManyToOne
     @JoinColumn(name = "_teacher_id")
@@ -41,5 +42,6 @@ public class Teaching {
     @JoinColumn(name = "_subject_id")
     private Subject subject;
 
-    private String classComments;
+    private String classComment;
+
 }

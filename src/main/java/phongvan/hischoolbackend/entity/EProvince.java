@@ -1,6 +1,7 @@
 package phongvan.hischoolbackend.entity;
 
 public enum EProvince {
+    NONE("X"),
     HA_NOI("Hà Nội"),
     ;
 

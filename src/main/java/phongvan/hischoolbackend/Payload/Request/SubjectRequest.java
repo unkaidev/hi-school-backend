@@ -14,6 +14,8 @@ public class SubjectRequest {
     private Integer id;
     @NotBlank
     private String name;
-    private Semester semester;
+    @NotBlank
+    private String grade;
+    private SemesterRequest semester;
 
 }

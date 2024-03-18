@@ -21,8 +21,10 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date attendanceDate;
+    @ManyToOne
+    @JoinColumn(name = "_timetable_id")
+    @JsonManagedReference
+    private TimeTable timeTable;
 
     @ManyToOne
     @JsonManagedReference
@@ -37,4 +39,12 @@ public class Attendance {
     private Schedule schedule;
 
     private boolean isPresent;
+
+    @Override
+    public String toString() {
+        return "Attendance{" +
+                "id=" + id +
+                ", isPresent=" + isPresent +
+                '}';
+    }
 }

@@ -1,0 +1,16 @@
+@startuml
+
+package phongvan.hischoolbackend.Controller {
+    class SchoolController {
+        - schoolService: SchoolService
+        - addressRepository: AddressRepository
+
+        + getAllSchool_Id(): ResponseEntity<MessageResponse>
+        + getSchoolWithPagination(page: int, limit: int): ResponseEntity<MessageResponse>
+        + addSchool(schoolRequest: SchoolRequest): ResponseEntity<?>
+        + deleteSchool(id: int): ResponseEntity<MessageResponse>
+        + updateSchool(schoolRequest: SchoolRequest): ResponseEntity<MessageResponse>
+    }
+}
+
+@enduml

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import phongvan.hischoolbackend.Payload.Request.YearRequest;
 import phongvan.hischoolbackend.Payload.Response.MessageResponse;
 import phongvan.hischoolbackend.Repository.AddressRepository;
+import phongvan.hischoolbackend.Repository.SchoolRepository;
 import phongvan.hischoolbackend.Service.YearService;
 import phongvan.hischoolbackend.entity.Address;
 import phongvan.hischoolbackend.entity.SchoolYear;
@@ -22,6 +23,8 @@ import java.util.Objects;
 public class YearController {
     @Autowired
     YearService yearService;
+    @Autowired
+    SchoolRepository schoolRepository;
 
     @GetMapping("/all")
     public ResponseEntity<MessageResponse> getAllYears() {
@@ -40,13 +43,30 @@ public class YearController {
         }
 
     }
+    @GetMapping("{schoolId}/all")
+    public ResponseEntity<MessageResponse> getAllYearsInSchool(@PathVariable int schoolId) {
+
+        List<SchoolYear> yearList = null;
+        try {
+            yearList = yearService.findAllInSchool(schoolId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", yearList));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+
+    }
 
     @GetMapping("/read")
-    public ResponseEntity<MessageResponse> getYearWithPagination(@RequestParam int page, @RequestParam int limit) {
+    public ResponseEntity<MessageResponse> getYearInSchoolWithPagination(@RequestParam int page, @RequestParam int limit, @RequestParam int schoolId) {
 
         Page<SchoolYear> yearPage = null;
         try {
-            yearPage = yearService.findPaginated(PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "id")));
+            yearPage = yearService.findPaginatedInSchool(schoolId,PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "id")));
             return ResponseEntity
                     .ok()
                     .body(new MessageResponse(0, "GET DATA SUCCESS", yearPage));
@@ -60,13 +80,15 @@ public class YearController {
     }
     @PostMapping("/create")
     public ResponseEntity<?> addYear(@Valid @RequestBody YearRequest yearRequest){
-        if (yearService.existsByName(yearRequest.getName())) {
+        int schoolId = Integer.parseInt(yearRequest.getSchoolId());
+        if (yearService.existsByNameAndSchoolId(yearRequest.getName(), schoolId)) {
             return ResponseEntity
                     .ok()
                     .body(new MessageResponse(-1,"Error: Name is already in use!","name"));
         }
         SchoolYear year = SchoolYear.builder()
                 .name(yearRequest.getName().toUpperCase())
+                .school(schoolRepository.findById(schoolId).get())
                 .build();
         yearService.updateYear(year);
         return ResponseEntity.ok(new MessageResponse(0,"Create New Year successfully!",null));
@@ -92,7 +114,9 @@ public class YearController {
         try {
             SchoolYear yearFind = yearService.findById(yearRequest.getId());
             String newName = yearRequest.getName();
-            if (yearService.existsByName(newName)) {
+            int schoolId = Integer.parseInt(yearRequest.getSchoolId());
+            boolean check =yearService.existsByNameAndSchoolId(newName, schoolId);
+            if (check) {
                 return ResponseEntity
                         .ok()
                         .body(new MessageResponse(-1,"Error: Name is already in use!","name"));

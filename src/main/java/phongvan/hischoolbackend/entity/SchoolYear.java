@@ -2,6 +2,8 @@ package phongvan.hischoolbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +25,21 @@ public class SchoolYear {
 
     private String name;
 
-//    @OneToMany(mappedBy = "schoolYear")
-//    @JsonIgnore
-//    private List<Semester> semesters;
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "_school_id")
+    private School school;
+
+    @OneToMany(mappedBy = "schoolYear")
+    @JsonIgnore
+    private List<Semester> semesters;
+
+    @Override
+    public String toString() {
+        return "SchoolYear{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
 }

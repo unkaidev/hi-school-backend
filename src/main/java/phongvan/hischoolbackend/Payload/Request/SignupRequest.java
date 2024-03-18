@@ -25,4 +25,6 @@ public class SignupRequest {
     private String gender;
     @NotBlank
     private String password;
+    @NotBlank
+    private String schoolId;
 }

@@ -16,6 +16,9 @@ public class RoleService {
     public List<Role> showRoleList() {
         return roleRepository.findAll();
     }
+    public List<Role> getRolesByNameNotIn(List<ERole> names) {
+        return roleRepository.findByNameNotIn(names);
+    }
     public Role findRoleByName (ERole name){
         return roleRepository.findByName(name).get();
     }

@@ -2,6 +2,7 @@ package phongvan.hischoolbackend.entity;
 
 public enum ESubject {    
     SINH_HOAT("Sinh Hoạt Chung"),
+    GDTC_10("Giáo dục thể chất K10"),
     TOAN_10("Toán K10"),
     VAN_10("Văn K10"),
     TIENG_ANH_10("Tiếng Anh K10"),
@@ -13,6 +14,8 @@ public enum ESubject {
     HOA_HOC_10("Hóa Học K10"),
     SINH_HOC_10("Sinh Học K10"),
     TIN_HOC_10("Tin Học K10"),
+
+    GDTC_11("Giáo dục thể chất K11"),
     TOAN_11("Toán K11"),
     VAN_11("Văn K11"),
     TIENG_ANH_11("Tiếng Anh K11"),

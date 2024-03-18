@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -26,7 +27,7 @@ public class TeacherAssignment {
             joinColumns = @JoinColumn(name = "_assignment_id"),
             inverseJoinColumns = @JoinColumn(name = "_class_id")
     )
-    private List<SchoolClass> classes;
+    private Set<SchoolClass> classes;
 
     @ManyToOne
     @JoinColumn(name = "_teacher_id")
@@ -38,8 +39,15 @@ public class TeacherAssignment {
     @JsonManagedReference
     private Subject subject;
 
-    @OneToMany(mappedBy = "teacherAssignment",
-            cascade = CascadeType.ALL)
-    private List<Score> scores;
+    @ManyToOne
+    @JoinColumn(name = "_semester_id")
+    @JsonManagedReference
+    private Semester semester;
 
+    @Override
+    public String toString() {
+        return "TeacherAssignment{" +
+                "id=" + id +
+                '}';
+    }
 }

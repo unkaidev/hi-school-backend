@@ -1,0 +1,29 @@
+@startuml
+
+package phongvan.hischoolbackend.Controller {
+    class TimeTableController {
+        - tTDService: TimeTableDetailService
+        - timeTableService: TimeTableService
+        - scheduleRepository: ScheduleRepository
+        - subjectRepository: SubjectRepository
+        - teacherRepository: TeacherRepository
+        - schoolClassRepository: SchoolClassRepository
+        - attendanceRepository: AttendanceRepository
+        - scoreRepository: ScoreRepository
+        - tARepository: TeacherAssignmentRepository
+        - notificationRepository: NotificationRepository
+
+        + getTimeWeekWithSemesterId(semesterId: int): ResponseEntity<MessageResponse>
+        + getTimeDayWithSemesterId(semesterId: int): ResponseEntity<MessageResponse>
+        + getTimeTableWithSemesterId(semesterId: int): ResponseEntity<MessageResponse>
+        + getTimeTableWithPagination(page: int, limit: int, semesterId: int, schoolClassId: int): ResponseEntity<MessageResponse>
+        + getAllForTeacher(username: String): ResponseEntity<MessageResponse>
+        + getAllForStudent(username: String): ResponseEntity<MessageResponse>
+        + addTimeTable(timeTableRequest: TimeTableRequest): ResponseEntity<?>
+        + deleteTimeDate(id: int): ResponseEntity<MessageResponse>
+        + deleteManyTimeDate(timeTables: List<Integer>): ResponseEntity<MessageResponse>
+        + UpdateTimeTable(timeTableRequest: TimeTableRequest): ResponseEntity<?>
+    }
+}
+
+@enduml

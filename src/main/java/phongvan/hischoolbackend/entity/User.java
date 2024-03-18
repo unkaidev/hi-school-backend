@@ -1,5 +1,7 @@
 package phongvan.hischoolbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,18 +42,46 @@ public class User {
     @ManyToMany
     @JsonManagedReference
     private Set<Role> roles = new HashSet<>();
-//
-//    @OneToOne
-//    @JoinColumn(name = "_student_id")
-//    private Student student;
-//
-//    @OneToOne
-//    @JoinColumn(name = "_teacher_id")
-//    private Teacher teacher;
-//
-//    @OneToOne
-//    @JoinColumn(name = "_parent_id")
-//    private Parent parent;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "_school_id")
+    private School school;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Student student;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Teacher teacher;
+
 
     private boolean active;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", password='" + password + '\'' +
+                ", gender='" + gender + '\'' +
+                ", active=" + active +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return active == user.active && Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(email, user.email) && Objects.equals(phone, user.phone) && Objects.equals(password, user.password) && Objects.equals(gender, user.gender);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, email, phone, password, gender, active);
+    }
 }

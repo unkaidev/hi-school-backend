@@ -34,12 +34,25 @@ public class Score {
     private Semester semester;
 
     @ManyToOne
-    @JoinColumn(name = "teacher_assignment_id")
+    @JoinColumn(name = "_teacher_id")
     @JsonManagedReference
-    private TeacherAssignment teacherAssignment;
+    private Teacher teacher;
 
     private Double dailyScore;
     private Double midtermScore;
     private Double finalScore;
+    private Double subjectScore;
     private String subjectEvaluation;
+
+    @Override
+    public String toString() {
+        return "Score{" +
+                "id=" + id +
+                ", dailyScore=" + dailyScore +
+                ", midtermScore=" + midtermScore +
+                ", finalScore=" + finalScore +
+                ", subjectEvaluation='" + subjectEvaluation + '\'' +
+                '}';
+    }
+
 }

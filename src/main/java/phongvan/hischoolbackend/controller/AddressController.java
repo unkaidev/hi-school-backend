@@ -1,16 +1,21 @@
 package phongvan.hischoolbackend.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import phongvan.hischoolbackend.entity.ECity;
-import phongvan.hischoolbackend.entity.EDistrict;
-import phongvan.hischoolbackend.entity.EProvince;
-import phongvan.hischoolbackend.entity.EWardCommune;
+import phongvan.hischoolbackend.Repository.IssuedPlaceRepository;
+import phongvan.hischoolbackend.entity.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/address")
 public class AddressController {
+
+    @Autowired
+    private IssuedPlaceRepository issuedPlaceRepository;
+
     @GetMapping("/allWardCommune")
     public String[] getAllWardCommune(){
         EWardCommune[] wardCommunes = EWardCommune.values();
@@ -46,5 +51,9 @@ public class AddressController {
             names[i] = cities[i].getName();
         }
         return names;
+    }
+    @GetMapping("/allIssuedPlace")
+    public List<IssuedPlace> getAllIssuedPlace(){
+        return issuedPlaceRepository.findAll();
     }
 }

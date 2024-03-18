@@ -20,10 +20,18 @@ public class Semester {
     private Integer id;
 
     private String name;
+    private String study_period;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "_school_year_id")
-    @JsonProperty
     private SchoolYear schoolYear;
 
+    @Override
+    public String toString() {
+        return "Semester{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

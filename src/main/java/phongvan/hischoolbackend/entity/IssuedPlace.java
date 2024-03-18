@@ -19,4 +19,12 @@ public class IssuedPlace {
     private String name;
     @OneToOne
     private Address address;
+
+    @Override
+    public String toString() {
+        return "IssuedPlace{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

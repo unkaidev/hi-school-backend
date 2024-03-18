@@ -15,7 +15,9 @@ import java.time.LocalTime;
 public class ScheduleRequest {
     private Integer id;
     @NotBlank
-    private String scheduleName;
+    private String name;
+    @NotBlank
+    private SemesterRequest semester;
 
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime startTime;

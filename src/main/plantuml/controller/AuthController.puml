@@ -1,0 +1,18 @@
+@startuml
+
+package phongvan.hischoolbackend.Controller {
+    class AuthController {
+        - authenticationManager: AuthenticationManager
+        - userRepository: UserRepository
+        - roleRepository: RoleRepository
+        - schoolRepository: SchoolRepository
+        - encoder: PasswordEncoder
+        - jwtUtils: JwtUtils
+
+        + authenticateUser(loginRequest: LoginRequest): ResponseEntity<?>
+        + registerUser(signUpRequest: SignupRequest): ResponseEntity<?>
+        + signout(): ResponseEntity<?>
+    }
+}
+
+@enduml

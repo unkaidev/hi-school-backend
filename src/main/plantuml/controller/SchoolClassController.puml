@@ -1,0 +1,28 @@
+@startuml
+
+package phongvan.hischoolbackend.Controller {
+    class SchoolClassController {
+        - schoolClassService: SchoolClassService
+        - yearRepository: YearRepository
+        - teacherRepository: TeacherRepository
+        - roleRepository: RoleRepository
+
+        + getAllGrade(): String[]
+        + countStudentsInClass(classId: int): ResponseEntity<MessageResponse>
+        + getAllSchoolClasses(): ResponseEntity<MessageResponse>
+        + getASchoolClass(id: int): ResponseEntity<MessageResponse>
+        + getSchoolClassWithPagination(page: int, limit: int, schoolId: int): ResponseEntity<MessageResponse>
+        + getSchoolClassWithGradeAndYearId(grade: String, yearId: int): ResponseEntity<MessageResponse>
+        + getClassWithYearId(yearId: int): ResponseEntity<MessageResponse>
+        + findAllBySemesterIdAndHeadTeacher(username: String, semesterId: int): ResponseEntity<MessageResponse>
+        + getAllWithYearIdAndGradeForHeadTeacher(username: String, yearId: int, grade: String): ResponseEntity<MessageResponse>
+        + getAllWithYearIdAndGradeForStudent(username: String, yearId: int, grade: String): ResponseEntity<MessageResponse>
+        + getAllClassWithSchoolId(schoolId: int): ResponseEntity<MessageResponse>
+        + checkExistSchoolClass(schoolClassName: String, yearName: String, schoolId: Integer): boolean
+        + addSchoolClass(schoolClassRequest: SchoolClassRequest): ResponseEntity<?>
+        + updateSchoolClass(schoolClassRequest: SchoolClassRequest): ResponseEntity<?>
+        + deleteSchoolClass(id: int): ResponseEntity<MessageResponse>
+    }
+}
+
+@enduml

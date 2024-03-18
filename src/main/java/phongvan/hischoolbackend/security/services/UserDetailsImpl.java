@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import phongvan.hischoolbackend.entity.School;
 import phongvan.hischoolbackend.entity.User;
 
 import java.util.Collection;
@@ -24,16 +25,19 @@ public class UserDetailsImpl implements UserDetails {
     private String email;
     @JsonIgnore
     private String password;
+    @JsonIgnore
+    private School school;
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(String id, String username, String phone, String email, String password,
+    public UserDetailsImpl(String id, String username, String phone, String email, String password, School school,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.phone = phone;
         this.email = email;
         this.password = password;
+        this.school = school;
         this.authorities = authorities;
     }
 
@@ -48,6 +52,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getPhone(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getSchool(),
                 authorities);
     }
 
@@ -63,6 +68,13 @@ public class UserDetailsImpl implements UserDetails {
         return phone;
     }
 
+    public String getSchoolId() {
+        if(this.school == null){
+            return null;
+        }else {
+            return school.getId().toString();
+        }
+    }
 
     @Override
     public String getPassword() {

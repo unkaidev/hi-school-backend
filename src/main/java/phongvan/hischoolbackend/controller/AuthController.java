@@ -20,15 +20,18 @@ import phongvan.hischoolbackend.Payload.Request.SignupRequest;
 import phongvan.hischoolbackend.Payload.Response.MessageResponse;
 import phongvan.hischoolbackend.Payload.Response.UserInfoResponse;
 import phongvan.hischoolbackend.Repository.RoleRepository;
+import phongvan.hischoolbackend.Repository.SchoolRepository;
 import phongvan.hischoolbackend.Repository.UserRepository;
 import phongvan.hischoolbackend.entity.ERole;
 import phongvan.hischoolbackend.entity.Role;
+import phongvan.hischoolbackend.entity.School;
 import phongvan.hischoolbackend.entity.User;
 import phongvan.hischoolbackend.security.jwt.JwtUtils;
 import phongvan.hischoolbackend.security.services.UserDetailsImpl;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,6 +46,8 @@ public class AuthController {
 
     @Autowired
     RoleRepository roleRepository;
+    @Autowired
+    SchoolRepository schoolRepository;
 
     @Autowired
     PasswordEncoder encoder;
@@ -57,37 +62,47 @@ public class AuthController {
         try {
             if (!userExists) {
                 return ResponseEntity
-                        . ok()
-                        .body(new MessageResponse(-1, "Error: USERNAME OR PASSWORD IS INCORRECT!",null));
+                        .ok()
+                        .body(new MessageResponse(-1, "Error: USERNAME OR PASSWORD IS INCORRECT!", null));
             } else {
-                    Authentication authentication = authenticationManager.authenticate(
-                            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+                UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-                    ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+                ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
-                    List<String> roles = userDetails.getAuthorities().stream()
-                            .map(item -> item.getAuthority())
-                            .collect(Collectors.toList());
+                List<String> roles = userDetails.getAuthorities().stream()
+                        .map(item -> item.getAuthority())
+                        .collect(Collectors.toList());
 
-
+                if (userDetails.getSchoolId() == null) {
                     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                             .body(new UserInfoResponse(userDetails.getId(),
                                     userDetails.getUsername(),
                                     userDetails.getEmail(),
                                     userDetails.getPhone(),
                                     roles, 0, "Sign in success!"));
+                } else {
+                    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                            .body(new UserInfoResponse(userDetails.getId(),
+                                    userDetails.getUsername(),
+                                    userDetails.getEmail(),
+                                    userDetails.getPhone(),
+                                    userDetails.getSchoolId(),
+                                    roles, 0, "Sign in success!"));
+                }
+
 
             }
-        }catch(AuthenticationException e) {
-                return ResponseEntity
-                        .ok()
-                        .body(new MessageResponse(-1, "Error: Sign in!",null));
-            }
-
+        } catch (AuthenticationException e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Error: Sign in!", null));
         }
+
+    }
 
 
     @PostMapping("/signup")
@@ -95,26 +110,36 @@ public class AuthController {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .ok()
-                    .body(new MessageResponse(-1,"Error: Username is already taken!","username"));
+                    .body(new MessageResponse(-1, "Error: Username is already taken!", "username"));
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .ok()
-                    .body(new MessageResponse(-1,"Error: Email is already in use!","email"));
+                    .body(new MessageResponse(-1, "Error: Email is already in use!", "email"));
         }
         if (userRepository.existsByPhone(signUpRequest.getPhone())) {
             return ResponseEntity
                     .ok()
-                    .body(new MessageResponse(-1,"Error: Phone is already in use!","phone"));
+                    .body(new MessageResponse(-1, "Error: Phone is already in use!", "phone"));
         }
-
+        Optional<School> school = schoolRepository.findById(Integer.valueOf(signUpRequest.getSchoolId()));
+        if (school.isEmpty()) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Error: School is not present!", "school"));
+        }
+        String gender = signUpRequest.getGender();
+        if (gender.isEmpty() || gender.isBlank()) {
+            gender = "Nam";
+        }
         User user = User.builder()
                 .username(signUpRequest.getUsername())
-                .email( signUpRequest.getEmail())
+                .email(signUpRequest.getEmail())
                 .phone(signUpRequest.getPhone())
-                .gender(signUpRequest.getGender())
+                .gender(gender)
                 .password(encoder.encode(signUpRequest.getPassword()))
+                .school(school.get())
                 .build();
 
         Set<String> strRoles = signUpRequest.getRoles();
@@ -163,16 +188,17 @@ public class AuthController {
         user.setActive(true);
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse(0,"User registered successfully!",null));
+        return ResponseEntity.ok(new MessageResponse(0, "User registered successfully!", null));
     }
+
     @PostMapping("/signout")
     public ResponseEntity<?> signout() {
         ResponseCookie jwtCookie = jwtUtils.getCleanJwtCookie();
-        if(jwtCookie != null){
+        if (jwtCookie != null) {
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                    .body(new MessageResponse(0,"Sign out successfully!",null));
-        }else {
-            return ResponseEntity.status(500).body(new MessageResponse(-1,"Error sign out!",null));
+                    .body(new MessageResponse(0, "Sign out successfully!", null));
+        } else {
+            return ResponseEntity.status(500).body(new MessageResponse(-1, "Error sign out!", null));
         }
 
     }

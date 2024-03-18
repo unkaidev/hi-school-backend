@@ -1,0 +1,36 @@
+@startuml
+
+package phongvan.hischoolbackend.entity {
+    class TeacherAssignment {
+        - id: Integer
+        - classes: Set<SchoolClass>
+        - teacher: Teacher
+        - subject: Subject
+        - semester: Semester
+
+        {static} <<ID>> id
+        {static} <<ManyToMany>> classes
+        {static} <<ManyToOne>> teacher
+        {static} <<JsonManagedReference>> teacher
+        {static} <<ManyToOne>> subject
+        {static} <<JsonManagedReference>> subject
+        {static} <<ManyToOne>> semester
+        {static} <<JsonManagedReference>> semester
+
+        + TeacherAssignment()
+        + TeacherAssignment(id: Integer, classes: Set<SchoolClass>, teacher: Teacher, subject: Subject, semester: Semester)
+        + getId(): Integer
+        + setId(id: Integer): void
+        + getClasses(): Set<SchoolClass>
+        + setClasses(classes: Set<SchoolClass>): void
+        + getTeacher(): Teacher
+        + setTeacher(teacher: Teacher): void
+        + getSubject(): Subject
+        + setSubject(subject: Subject): void
+        + getSemester(): Semester
+        + setSemester(semester: Semester): void
+        + toString(): String
+    }
+}
+
+@enduml

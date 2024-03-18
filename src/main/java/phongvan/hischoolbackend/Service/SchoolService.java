@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import phongvan.hischoolbackend.Repository.SchoolRepository;
 import phongvan.hischoolbackend.entity.School;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.Optional;
 public class SchoolService {
     @Autowired
     SchoolRepository schoolRepository;
+
     public Optional<School> aSchool(String name) {
         return schoolRepository.findByName(name);
     }
@@ -57,4 +59,20 @@ public class SchoolService {
     public School findById(Integer id) {
         return schoolRepository.findById(id).get();
     }
+
+    public List<String> findAllSchool_Id() {
+        List<String> school_ids = new ArrayList<>();
+        try {
+            List<School> schoolList = allSchools();
+            if (schoolList != null) {
+                for (School schoolIndex : schoolList) {
+                    school_ids.add(schoolIndex.getId().toString());
+                }
+            }
+            return school_ids;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

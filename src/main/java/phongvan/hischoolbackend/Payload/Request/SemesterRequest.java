@@ -13,6 +13,10 @@ public class SemesterRequest {
     private Integer id;
     @NotBlank
     private String name;
-    private SchoolYear schoolYear;
-
+    @NotBlank
+    private String study_period;
+    private String start_date;
+    private String end_date;
+    @NotBlank
+    private YearRequest schoolYear;
 }

@@ -22,12 +22,14 @@ public class SchoolClass {
 
     private String name;
 
-    @ManyToOne
+    private String grade;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "_year_id")
     @JsonManagedReference
     private SchoolYear schoolYear;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "_teacher_id")
     @JsonManagedReference
     private Teacher teacher;
@@ -47,4 +49,14 @@ public class SchoolClass {
     )
     private Collection<Student> students;
 
+    @Override
+    public String toString() {
+        return "SchoolClass{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+    public int classSize() {
+        return this.getStudents().size();
+    }
 }

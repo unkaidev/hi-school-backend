@@ -14,6 +14,8 @@ import phongvan.hischoolbackend.Repository.SubjectRepository;
 import phongvan.hischoolbackend.Service.SubjectService;
 import phongvan.hischoolbackend.entity.*;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,13 +36,45 @@ public class SubjectController {
         }
         return names;
     }
+    @GetMapping("/all")
+    public ResponseEntity<MessageResponse> getAllSubjectBySemester(@RequestParam int semesterId) {
 
+        List<Subject> subjectList = null;
+        try {
+            subjectList = subjectService.findAllBySemester(semesterId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", subjectList));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Something Went Wrong In Server", null));
+        }
+    }
+    @GetMapping("{semesterId}/all-by-grade")
+    public ResponseEntity<MessageResponse> getSchoolClassWithGradeAndYearId(@RequestParam String grade,@PathVariable int semesterId) {
+
+        List<Subject> subjectList = null;
+        try {
+            subjectList = subjectService.findAllBySemester_IdAndGrade(semesterId,grade);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", subjectList));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+
+    }
     @GetMapping("/read")
-    public ResponseEntity<MessageResponse> getSubjectWithPagination(@RequestParam int page, @RequestParam int limit) {
+    public ResponseEntity<MessageResponse> getSubjectWithPagination(@RequestParam int page, @RequestParam int limit,@RequestParam int schoolId) {
 
         Page<Subject> subjectPage = null;
         try {
-            subjectPage = subjectService.findPaginated(PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "id")));
+            subjectPage = subjectService.findPaginated(schoolId,PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "id")));
             return ResponseEntity
                     .ok()
                     .body(new MessageResponse(0, "Get Data Success", subjectPage));
@@ -69,13 +103,9 @@ public class SubjectController {
     public ResponseEntity<?> addSubject(@Valid @RequestBody SubjectRequest subjectRequest) {
         try {
             String subjectName = subjectRequest.getName().toUpperCase();
-            Semester semester = subjectRequest.getSemester();
-
-            if (semester == null) {
-                return ResponseEntity
-                        .ok()
-                        .body(new MessageResponse(-1, "Error: Semester not found", null));
-            }
+            Integer semesterId = subjectRequest.getSemester().getId();
+            Semester semester = semesterRepository.getById(semesterId);
+            String grade = subjectRequest.getGrade();
             if (checkExistSubject(subjectName,semester.getId())) {
                 return ResponseEntity
                         .ok()
@@ -84,6 +114,7 @@ public class SubjectController {
             if (!subjectName.isEmpty()) {
                 Subject subject = Subject.builder()
                         .name(subjectName)
+                        .grade(grade)
                         .semester(semester)
                         .build();
                 subjectService.updateSubject(subject);
@@ -117,8 +148,10 @@ public class SubjectController {
     public ResponseEntity<MessageResponse> updateSubject(@RequestBody SubjectRequest subjectRequest) {
         try {
             Subject subjectFind = subjectService.findById(subjectRequest.getId());
-            Semester semester = subjectRequest.getSemester();
+            Integer semesterId = subjectRequest.getSemester().getId();
+            Semester semester = semesterRepository.getById(semesterId);
             String newName = subjectRequest.getName().toUpperCase();
+            String newGrade = subjectRequest.getGrade();
 
             if (newName.isEmpty()) {
                 return ResponseEntity
@@ -126,18 +159,19 @@ public class SubjectController {
                         .body(new MessageResponse(-1, "Error: Subject name cannot be empty", null));
             }
 
-            if (checkExistSubject(newName,semester.getId())) {
+            if (checkExistSubject(newName,semester.getId())&& !newName.equals(subjectFind.getName())) {
                 return ResponseEntity
                         .ok()
                         .body(new MessageResponse(-1, "Error: Subject already exists for the same school subject", null));
             }
             subjectFind.setName(newName);
             subjectFind.setSemester(semester);
+            subjectFind.setGrade(newGrade);
             subjectService.updateSubject(subjectFind);
 
             return ResponseEntity
                     .ok()
-                    .body(new MessageResponse(0, "Update Semester Success", null));
+                    .body(new MessageResponse(0, "Update Subject Success", null));
 
 
         } catch (Exception e) {

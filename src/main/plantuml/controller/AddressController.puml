@@ -1,0 +1,16 @@
+@startuml
+
+package phongvan.hischoolbackend.Controller {
+    class AddressController {
+        - issuedPlaceRepository: IssuedPlaceRepository
+
+        + AddressController()
+        + getAllWardCommune(): String[]
+        + getAllDistrict(): String[]
+        + getAllProvince(): String[]
+        + getAllCity(): String[]
+        + getAllIssuedPlace(): List<IssuedPlace>
+    }
+}
+
+@enduml

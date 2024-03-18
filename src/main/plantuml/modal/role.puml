@@ -1,0 +1,27 @@
+@startuml
+
+package phongvan.hischoolbackend.entity {
+    class Role {
+        - id: int
+        - name: ERole
+
+        {static} <<ID>> id
+        {static} <<GeneratedValue>> strategy
+
+        + Role()
+        + Role(id: int, name: ERole)
+        + getId(): int
+        + setId(id: int): void
+        + getName(): ERole
+        + setName(name: ERole): void
+    }
+}
+
+enum ERole {
+    STUDENT
+    TEACHER
+    PARENT
+    ADMIN
+}
+
+@enduml

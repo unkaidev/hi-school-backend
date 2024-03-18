@@ -1,0 +1,29 @@
+@startuml
+
+package phongvan.hischoolbackend.Controller {
+    class StudentController {
+        - studentService: StudentService
+        - addressRepository: AddressRepository
+        - issuedPlaceRepository: IssuedPlaceRepository
+        - parentRepository: ParentRepository
+        - userRepository: UserRepository
+        - roleRepository: RoleRepository
+        - schoolRepository: SchoolRepository
+        - encoder: PasswordEncoder
+
+        + generateRandomUsername(): String
+        + generateRandomEmail(username: String): String
+        + getStudentWithPagination(page: int, limit: int, schoolId: int): ResponseEntity<MessageResponse>
+        + getStudentInClassWithPagination(page: int, limit: int, schoolClassId: int): ResponseEntity<MessageResponse>
+        + getStudentNotInClassWithPagination(page: int, limit: int, schoolClassId: int): ResponseEntity<MessageResponse>
+        + addStudent(studentRequest: StudentRequest): ResponseEntity<?>
+        + deleteStudent(id: int): ResponseEntity<MessageResponse>
+        + removeStudentFromClass(schoolClassId: int, studentId: int): ResponseEntity<MessageResponse>
+        + addStudentFromClass(schoolClassId: int, studentId: int): ResponseEntity<MessageResponse>
+        + addStudentsFromClass(schoolClassId: int, students: List<Integer>): ResponseEntity<MessageResponse>
+        + removeStudentsFromClass(schoolClassId: int, students: List<Integer>): ResponseEntity<MessageResponse>
+        + updateStudent(studentRequest: StudentRequest): ResponseEntity<?>
+    }
+}
+
+@enduml

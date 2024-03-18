@@ -6,4 +6,5 @@ import phongvan.hischoolbackend.entity.IssuedPlace;
 
 @Repository
 public interface IssuedPlaceRepository extends JpaRepository<IssuedPlace, Integer> {
+    IssuedPlace findByName(String newIssuedPlaceName);
 }

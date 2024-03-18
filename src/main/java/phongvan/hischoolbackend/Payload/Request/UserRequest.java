@@ -12,7 +12,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequest {
-    @NotBlank
     private Integer id;
     @NotBlank
     private String username;
@@ -22,7 +21,6 @@ public class UserRequest {
     private String email;
 
     private String roleId;
-    @NotBlank
     private String phone;
     @NotBlank
     private String gender;
@@ -30,4 +28,6 @@ public class UserRequest {
     private String password;
     @NotBlank
     private boolean active;
+
+    private int schoolId;
 }

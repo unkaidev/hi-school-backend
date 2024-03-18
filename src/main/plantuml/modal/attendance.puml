@@ -1,0 +1,41 @@
+@startuml
+
+package phongvan.hischoolbackend.entity {
+    class Attendance {
+        - id: Integer
+        - isPresent: boolean
+        - timeTable: TimeTable
+        - teacher: Teacher
+        - student: Student
+        - schedule: Schedule
+
+        {static} <<ID>> id
+        {static} <<GeneratedValue>> strategy
+        {static} <<ManyToOne>> timeTable
+        {static} <<ManyToOne>> teacher
+        {static} <<ManyToOne>> student
+        {static} <<ManyToOne>> schedule
+        {static} <<JsonManagedReference>> timeTable
+        {static} <<JsonManagedReference>> teacher
+        {static} <<JsonManagedReference>> student
+        {static} <<JsonManagedReference>> schedule
+        {static} <<Override>> toString(): String
+
+        + Attendance()
+        + Attendance(id: Integer, timeTable: TimeTable, teacher: Teacher, student: Student, schedule: Schedule, isPresent: boolean)
+        + getId(): Integer
+        + setId(id: Integer): void
+        + getTimeTable(): TimeTable
+        + setTimeTable(timeTable: TimeTable): void
+        + getTeacher(): Teacher
+        + setTeacher(teacher: Teacher): void
+        + getStudent(): Student
+        + setStudent(student: Student): void
+        + getSchedule(): Schedule
+        + setSchedule(schedule: Schedule): void
+        + isPresent(): boolean
+        + setPresent(isPresent: boolean): void
+    }
+}
+
+@enduml

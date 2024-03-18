@@ -1,0 +1,30 @@
+@startuml
+
+package phongvan.hischoolbackend.entity {
+    class Transcript {
+        - id: Integer
+        - yearEvaluation: String
+        - student: Student
+        - schoolYear: SchoolYear
+
+        {static} <<ID>> id
+        {static} <<ManyToOne>> student
+        {static} <<JsonManagedReference>> student
+        {static} <<ManyToOne>> schoolYear
+        {static} <<JsonManagedReference>> schoolYear
+
+        + Transcript()
+        + Transcript(id: Integer, yearEvaluation: String, student: Student, schoolYear: SchoolYear)
+        + getId(): Integer
+        + setId(id: Integer): void
+        + getYearEvaluation(): String
+        + setYearEvaluation(yearEvaluation: String): void
+        + getStudent(): Student
+        + setStudent(student: Student): void
+        + getSchoolYear(): SchoolYear
+        + setSchoolYear(schoolYear: SchoolYear): void
+        + toString(): String
+    }
+}
+
+@enduml

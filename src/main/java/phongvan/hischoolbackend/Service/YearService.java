@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import phongvan.hischoolbackend.Repository.YearRepository;
+import phongvan.hischoolbackend.entity.ERole;
 import phongvan.hischoolbackend.entity.SchoolYear;
+import phongvan.hischoolbackend.entity.User;
 
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -26,23 +29,24 @@ public class YearService {
         return yearRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
-    public Page<SchoolYear> findPaginated(Pageable pageable) {
+    public Page<SchoolYear> findPaginatedInSchool(Integer schoolId,Pageable pageable) {
+        List<SchoolYear> yearsInSchool = yearRepository.findAllBySchool_Id(schoolId,Sort.by(Sort.Direction.DESC, "id"));
+
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
         List<SchoolYear> list;
-        List<SchoolYear> allYears = allYears();
 
-        if (allYears.size() < startItem) {
+        if (yearsInSchool.size() < startItem) {
             list = Collections.emptyList();
         } else {
-            int toIndex = Math.min(startItem + pageSize, allYears.size());
-            list = allYears.subList(startItem, toIndex);
+            int toIndex = Math.min(startItem + pageSize, yearsInSchool.size());
+            list = yearsInSchool.subList(startItem, toIndex);
         }
 
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
-        Page<SchoolYear> yearPage = new PageImpl<>(list, pageRequest, allYears.size());
+        Page<SchoolYear> yearPage = new PageImpl<>(list, pageRequest, yearsInSchool.size());
         return yearPage;
     }
 
@@ -54,8 +58,11 @@ public class YearService {
         yearRepository.save(year);
     }
 
-    public boolean existsByName(String name) {
-        return yearRepository.existsByName(name);
+    public boolean existsByNameAndSchoolId(String name, int id) {
+        return yearRepository.existsByNameAndSchool_Id(name,id);
     }
 
+    public List<SchoolYear> findAllInSchool(int schoolId) {
+        return yearRepository.findAllBySchool_Id(schoolId, Sort.by(Sort.Direction.DESC,"id"));
+    }
 }

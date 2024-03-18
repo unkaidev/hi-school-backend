@@ -1,0 +1,14 @@
+@startuml
+
+package phongvan.hischoolbackend.Controller {
+    class AttendanceController {
+        - attendanceService: AttendanceService
+        - notificationRepository: NotificationRepository
+
+        + AttendanceController()
+        + getTimeTableWithPagination(page: int, limit: int, timeTableId: int, scheduleId: int, teacherId: int): ResponseEntity<MessageResponse>
+        + changeStatus(id: int): ResponseEntity<MessageResponse>
+    }
+}
+
+@enduml

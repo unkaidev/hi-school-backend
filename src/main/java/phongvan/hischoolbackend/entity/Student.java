@@ -1,16 +1,17 @@
 package phongvan.hischoolbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.sql.Blob;
 
-import java.sql.Date;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private User user;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -33,33 +34,28 @@ public class Student {
     @JsonManagedReference
     private Parent parent;
 
-    @ManyToOne
-    @JoinColumn(name = "_school_id")
-    @JsonManagedReference
-    private School school;
-
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-    @JsonBackReference
+    @JsonIgnore
     private Collection<Transcript> transcripts;
 
     @Lob
-    @Column(name = "_avatar")
-    private Blob avatar;
+    @Column(name = "_avatar",columnDefinition = "LONGTEXT")
+    private String avatar;
 
-    private String firstname;
-    private String lastname;
-    private Date dateOfBirth;
+    private String firstName;
+    private String lastName;
+    private String dateOfBirth;
     private String nationality;
     private String ethnicity;
     private String citizenId;
-    private Date issuedDate;
+    private String issuedDate;
     @ManyToOne
     @JsonManagedReference
     private IssuedPlace issuedPlace;
-    @ManyToOne
+    @ManyToOne( cascade = CascadeType.ALL)
     @JsonManagedReference
     private Address permanentAddress;
-    @ManyToOne
+    @ManyToOne( cascade = CascadeType.ALL)
     @JsonManagedReference
     private Address contactAddress;
 
@@ -75,10 +71,19 @@ public class Student {
             joinColumns = @JoinColumn(name = "_student_id"),
             inverseJoinColumns = @JoinColumn(name = "_class_id")
     )
+    @JsonIgnore
     private Collection<SchoolClass> classes;
 
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
+    @JsonBackReference
     private Collection<Score> scores;
 
-
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                '}';
+    }
 }

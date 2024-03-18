@@ -1,0 +1,39 @@
+@startuml
+
+package phongvan.hischoolbackend.entity {
+    class SchoolClass {
+        - id: Integer
+        - name: String
+        - grade: String
+        - schoolYear: SchoolYear
+        - teacher: Teacher
+        - students: Collection<Student>
+
+        {static} <<ID>> id
+        {static} <<GeneratedValue>> strategy
+        {static} <<ManyToOne>> schoolYear
+        {static} <<JsonManagedReference>> schoolYear
+        {static} <<ManyToOne>> teacher
+        {static} <<JsonManagedReference>> teacher
+        {static} <<ManyToMany>> students
+
+        + SchoolClass()
+        + SchoolClass(id: Integer, name: String, grade: String, schoolYear: SchoolYear, teacher: Teacher, students: Collection<Student>)
+        + getId(): Integer
+        + setId(id: Integer): void
+        + getName(): String
+        + setName(name: String): void
+        + getGrade(): String
+        + setGrade(grade: String): void
+        + getSchoolYear(): SchoolYear
+        + setSchoolYear(schoolYear: SchoolYear): void
+        + getTeacher(): Teacher
+        + setTeacher(teacher: Teacher): void
+        + getStudents(): Collection<Student>
+        + setStudents(students: Collection<Student>): void
+        + toString(): String
+        + classSize(): int
+    }
+}
+
+@enduml

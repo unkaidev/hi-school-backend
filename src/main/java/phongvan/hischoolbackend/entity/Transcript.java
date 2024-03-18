@@ -19,7 +19,7 @@ public class Transcript {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String semesterEvaluation;
+    private String yearEvaluation;
 
     @ManyToOne
             (fetch = FetchType.LAZY,
@@ -36,4 +36,12 @@ public class Transcript {
     @JoinColumn(name = "_year_id")
     @JsonManagedReference
     private SchoolYear schoolYear;
+
+    @Override
+    public String toString() {
+        return "Transcript{" +
+                "id=" + id +
+                ", semesterEvaluation='" + yearEvaluation + '\'' +
+                '}';
+    }
 }

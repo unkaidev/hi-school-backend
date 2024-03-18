@@ -12,4 +12,6 @@ public class YearRequest {
     private Integer id;
     @NotBlank
     private String name;
+    @NotBlank
+    private String schoolId;
 }
