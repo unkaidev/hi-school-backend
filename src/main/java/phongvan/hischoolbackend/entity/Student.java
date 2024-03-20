@@ -9,10 +9,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -20,6 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "_student")
 public class Student {
     @Id
@@ -78,6 +83,15 @@ public class Student {
     @JsonBackReference
     private Collection<Score> scores;
 
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Date createdAt;
+
+    @LastModifiedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date updatedAt;
     @Override
     public String toString() {
         return "Student{" +

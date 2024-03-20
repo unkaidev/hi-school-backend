@@ -1,0 +1,19 @@
+@startuml
+
+(*) --> "Receive a request to find all ready teachers in a school by school ID and group"
+
+if "Request: findAllInSchool_IdAndGroup_Ready" then
+    --> "Retrieve all users with the 'ROLE_TEACHER' role and matching school ID"
+    --> "Extract the associated teachers from the retrieved users"
+    --> "Filter teachers by the specified group"
+    --> "Retrieve all teachers with non-empty time table details"
+    --> "Remove teachers with non-empty time table details if not in the 'Ban giám hiệu' group"
+    --> "Return the list of ready teachers"
+    --> (*)
+else
+    --> "Invalid request"
+    --> "Return an empty list"
+    --> (*)
+endif
+
+@enduml

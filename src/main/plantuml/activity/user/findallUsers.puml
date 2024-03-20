@@ -1,0 +1,16 @@
+@startuml
+
+(*) --> "Receive a request to retrieve all users"
+
+if "Request: allUsers" then
+    --> "Retrieve all users from the database"
+    --> "Sort the users by descending ID"
+    --> "Return the list of users"
+    --> (*)
+else
+    --> "Invalid request"
+    --> "Return an empty list"
+    --> (*)
+endif
+
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+
+(*) --> "Receive a request to find paginated students by school ID"
+
+if "Request: findPaginated" then
+    --> "Retrieve all users with the 'ROLE_USER' role and matching school ID"
+    --> "Extract the associated students from the retrieved users"
+    --> "Paginate the student list based on the provided page and limit"
+    --> "Return the paginated result"
+    --> (*)
+else
+    --> "Invalid request"
+    --> "Return an empty page"
+    --> (*)
+endif
+
+@enduml

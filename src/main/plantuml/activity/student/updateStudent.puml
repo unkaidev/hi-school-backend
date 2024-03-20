@@ -1,0 +1,15 @@
+@startuml
+
+(*) --> "Receive a request to update a student's information"
+
+if "Request: updateStudent" then
+    --> "Update the student's information in the database"
+    --> "Return success message"
+    --> (*)
+else
+    --> "Invalid request"
+    --> "Return error message"
+    --> (*)
+endif
+
+@enduml

@@ -19,13 +19,11 @@ import phongvan.hischoolbackend.Payload.Request.LoginRequest;
 import phongvan.hischoolbackend.Payload.Request.SignupRequest;
 import phongvan.hischoolbackend.Payload.Response.MessageResponse;
 import phongvan.hischoolbackend.Payload.Response.UserInfoResponse;
+import phongvan.hischoolbackend.Repository.NotificationRepository;
 import phongvan.hischoolbackend.Repository.RoleRepository;
 import phongvan.hischoolbackend.Repository.SchoolRepository;
 import phongvan.hischoolbackend.Repository.UserRepository;
-import phongvan.hischoolbackend.entity.ERole;
-import phongvan.hischoolbackend.entity.Role;
-import phongvan.hischoolbackend.entity.School;
-import phongvan.hischoolbackend.entity.User;
+import phongvan.hischoolbackend.entity.*;
 import phongvan.hischoolbackend.security.jwt.JwtUtils;
 import phongvan.hischoolbackend.security.services.UserDetailsImpl;
 
@@ -54,6 +52,8 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+    @Autowired
+    NotificationRepository notificationRepository;
 
 
     @PostMapping("/signin")
@@ -123,7 +123,7 @@ public class AuthController {
                     .ok()
                     .body(new MessageResponse(-1, "Error: Phone is already in use!", "phone"));
         }
-        Optional<School> school = schoolRepository.findById(Integer.valueOf(signUpRequest.getSchoolId()));
+        Optional<School> school = schoolRepository.findById(signUpRequest.getSchool().getId());
         if (school.isEmpty()) {
             return ResponseEntity
                     .ok()
@@ -187,6 +187,21 @@ public class AuthController {
         user.setRoles(roles);
         user.setActive(true);
         userRepository.save(user);
+
+        User user_admin = userRepository.findByUsername("admin").orElse(null);
+        assert user_admin != null;
+        Notification notification_1 = Notification.builder()
+                .sender(user_admin)
+                .receiver(user_admin)
+                .content(user_admin.getUsername() + " đã tạo 1 tài khoản thành công")
+                .build();
+        notificationRepository.save(notification_1);
+        Notification notification_2 = Notification.builder()
+                .sender(null)
+                .receiver(user)
+                .content("Tạo tài khoản thành công: "+ user.getUsername())
+                .build();
+        notificationRepository.save(notification_2);
 
         return ResponseEntity.ok(new MessageResponse(0, "User registered successfully!", null));
     }

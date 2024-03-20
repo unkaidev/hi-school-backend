@@ -1,0 +1,13 @@
+@startuml
+
+(*) --> "Receive a request to retrieve all notifications for a user"
+
+if "Request: getAllNotifications" then
+    --> "Retrieve the user by username"
+    --> if "User found" then
+        --> "Retrieve all notifications for the user"
+        --> "Return the list of notifications"
+        --> (*)
+    else
+        --> "Return an empty list (user not found)"
+

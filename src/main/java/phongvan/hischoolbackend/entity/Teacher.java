@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -18,6 +21,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "_teacher")
+@EntityListeners(AuditingEntityListener.class)
 public class Teacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +54,16 @@ public class Teacher {
             cascade = CascadeType.ALL)
     @JsonBackReference
     private Set<TimeTableDetail> timeTableDetails;
+
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private java.util.Date createdAt;
+
+    @LastModifiedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date updatedAt;
 
     @Override
     public String toString() {

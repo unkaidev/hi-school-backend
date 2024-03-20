@@ -6,14 +6,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
+
 public class Notification {
 
     @Id
@@ -29,8 +35,13 @@ public class Notification {
 
     @Column(columnDefinition = "TEXT")
     private String content;
-    private LocalDate timestamp;
+
     private boolean isRead;
+
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Date createdAt;
 
 
 }

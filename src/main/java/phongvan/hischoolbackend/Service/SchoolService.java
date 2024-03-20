@@ -75,4 +75,11 @@ public class SchoolService {
         }
     }
 
+    public School findALatestSchool() {
+        return  schoolRepository.findFirstByOrderByCreatedAtDesc();
+    }
+
+    public List<Object[]> countSchoolsByMonth(int year) {
+        return schoolRepository.countSchoolsByMonth(year);
+    }
 }

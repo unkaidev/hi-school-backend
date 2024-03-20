@@ -17,6 +17,7 @@ import phongvan.hischoolbackend.Service.TimeTableService;
 import phongvan.hischoolbackend.entity.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -202,8 +203,7 @@ public class TimeTableController {
                     Notification newNotification = Notification.builder()
                             .sender(null)
                             .receiver(teacher.getUser())
-                            .content("Có cập nhật lịch giảng dạy mới!")
-                            .timestamp(LocalDate.now())
+                            .content("Có cập nhật lịch giảng dạy mới! ngày " + timeTable.getStudyDate())
                             .isRead(false)
                             .build();
                     notificationRepository.save(newNotification);

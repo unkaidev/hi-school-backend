@@ -1,0 +1,16 @@
+@startuml
+
+(*) --> "Receive a request to find all teachers in a school by school ID"
+
+if "Request: findAllInSchool" then
+    --> "Retrieve all users with the 'ROLE_TEACHER' role and matching school ID"
+    --> "Extract the associated teachers from the retrieved users"
+    --> "Return the list of teachers"
+    --> (*)
+else
+    --> "Invalid request"
+    --> "Return an empty list"
+    --> (*)
+endif
+
+@enduml

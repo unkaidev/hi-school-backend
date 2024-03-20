@@ -1,0 +1,16 @@
+@startuml
+
+(*) --> "Receive a request to retrieve all teachers"
+
+if "Request: allTeachers" then
+    --> "Retrieve all teachers from the database"
+    --> "Sort the teachers by descending ID"
+    --> "Return the list of teachers"
+    --> (*)
+else
+    --> "Invalid request"
+    --> "Return an empty list"
+    --> (*)
+endif
+
+@enduml

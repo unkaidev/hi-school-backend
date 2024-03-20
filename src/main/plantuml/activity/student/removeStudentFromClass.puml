@@ -1,0 +1,18 @@
+@startuml
+
+(*) --> "Receive a request to remove a student from a class"
+
+if "Request: removeStudentFromClass" then
+    --> "Retrieve the specified school class by ID"
+    --> "Remove the student from the class"
+    --> "Delete the student's transcript for the class"
+    --> "Save the updated class information"
+    --> "Return success message"
+    --> (*)
+else
+    --> "Invalid request"
+    --> "Return error message"
+    --> (*)
+endif
+
+@enduml

@@ -6,14 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Collection;
+import java.util.Date;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "_school_class")
 public class SchoolClass {
     @Id
@@ -48,6 +53,16 @@ public class SchoolClass {
             inverseJoinColumns = @JoinColumn(name = "_student_id")
     )
     private Collection<Student> students;
+
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Date createdAt;
+
+    @LastModifiedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date updatedAt;
 
     @Override
     public String toString() {

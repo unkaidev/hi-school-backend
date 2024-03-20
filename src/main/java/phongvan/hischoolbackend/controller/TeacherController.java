@@ -62,7 +62,22 @@ public class TeacherController {
         }
         return names;
     }
+    @GetMapping("/latest")
+    public ResponseEntity<MessageResponse> getUserLatest(@RequestParam String username) {
+        Teacher latestUser = null;
+        try {
+            latestUser = teacherService.findALatestTeacher(username);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", latestUser));
 
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+
+    }
     @GetMapping("{schoolId}/all")
     public ResponseEntity<MessageResponse> getAllTeachersInSchool(@PathVariable int schoolId) {
 
@@ -80,7 +95,23 @@ public class TeacherController {
         }
 
     }
+    @GetMapping("{schoolId}/{yearId}/all")
+    public ResponseEntity<MessageResponse> getAllTeachersReadyInSchoolAndYear(@PathVariable int schoolId,@PathVariable int yearId) {
 
+        List<Teacher> teacherList = null;
+        try {
+            teacherList = teacherService.findAllTeachersReadyInSchoolAndYear(schoolId,yearId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", teacherList));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+
+    }
     @GetMapping("/get/{classId}")
     public ResponseEntity<MessageResponse> getATeacherWithClass(@PathVariable int classId) {
         try {
@@ -168,6 +199,7 @@ public class TeacherController {
 
     }
 
+    @Transactional
     @PostMapping("/create")
     public ResponseEntity<?> addTeacher(@Valid @RequestBody TeacherRequest teacherRequest) {
         try {
@@ -234,6 +266,8 @@ public class TeacherController {
             return ResponseEntity.ok(new MessageResponse(0, "Create New Teacher successfully!", null));
 
         } catch (Exception e) {
+            e.printStackTrace();
+
             return ResponseEntity.ok(new MessageResponse(-1, "Error: Create New Teacher!", null));
         }
 

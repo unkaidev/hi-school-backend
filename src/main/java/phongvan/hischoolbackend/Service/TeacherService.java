@@ -3,14 +3,8 @@ package phongvan.hischoolbackend.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import phongvan.hischoolbackend.Repository.TeacherRepository;
-import phongvan.hischoolbackend.Repository.TimeTableDetailRepository;
-import phongvan.hischoolbackend.Repository.TimeTableRepository;
-import phongvan.hischoolbackend.Repository.UserRepository;
-import phongvan.hischoolbackend.entity.ERole;
-import phongvan.hischoolbackend.entity.Teacher;
-import phongvan.hischoolbackend.entity.TimeTableDetail;
-import phongvan.hischoolbackend.entity.User;
+import phongvan.hischoolbackend.Repository.*;
+import phongvan.hischoolbackend.entity.*;
 
 import java.util.*;
 
@@ -22,6 +16,11 @@ public class TeacherService {
     UserRepository userRepository;
     @Autowired
     TimeTableDetailRepository timeTableDetailRepository;
+    @Autowired
+    SchoolClassRepository schoolClassRepository;
+    @Autowired
+    YearRepository yearRepository;
+
     public Teacher aTeacher(String lastName) {
         Optional<Teacher> teacher = teacherRepository.findByLastName(lastName);
         return teacher.orElse(null);
@@ -157,4 +156,26 @@ public class TeacherService {
         return false;
     }
 
+    public List<Teacher> findAllTeachersReadyInSchoolAndYear(int schoolId, int yearId) {
+        List<User> userList = userRepository.findAllByRoles_NameAndSchool_Id(ERole.ROLE_TEACHER,schoolId,Sort.by(Sort.Direction.DESC, "id"));
+        SchoolYear schoolYear = yearRepository.findById(yearId).orElse(null);
+        List<Teacher> teacherList = new ArrayList<>();
+        for (User user: userList
+        ) {
+            Teacher teacher = teacherRepository.findByUser(user);
+            teacherList.add(teacher);
+        }
+        if(schoolYear!=null){
+            teacherList.removeIf(teacher -> schoolClassRepository.existsBySchoolYearAndTeacher(schoolYear, teacher));
+        }
+        return teacherList;
+    }
+
+    public Teacher findALatestTeacher(String username) {
+        User user = userRepository.findByUsername(username).orElse(null);
+        assert user != null;
+        User userFind =  userRepository.findFirstBySchoolOrderByCreatedAtDesc(user.getSchool()).orElse(null);
+        assert userFind != null;
+        return userFind.getTeacher();
+    }
 }

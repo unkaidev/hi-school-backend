@@ -11,12 +11,11 @@ import phongvan.hischoolbackend.Payload.Request.SchoolRequest;
 import phongvan.hischoolbackend.Payload.Request.SignupRequest;
 import phongvan.hischoolbackend.Payload.Response.MessageResponse;
 import phongvan.hischoolbackend.Repository.AddressRepository;
+import phongvan.hischoolbackend.Repository.NotificationRepository;
 import phongvan.hischoolbackend.Repository.RoleRepository;
+import phongvan.hischoolbackend.Repository.UserRepository;
 import phongvan.hischoolbackend.Service.SchoolService;
-import phongvan.hischoolbackend.entity.Address;
-import phongvan.hischoolbackend.entity.ECity;
-import phongvan.hischoolbackend.entity.EGrade;
-import phongvan.hischoolbackend.entity.School;
+import phongvan.hischoolbackend.entity.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +29,43 @@ public class SchoolController {
     SchoolService schoolService;
     @Autowired
     AddressRepository addressRepository;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    NotificationRepository notificationRepository;
+
+    @GetMapping("/latest")
+    public ResponseEntity<MessageResponse> getLatestSchool() {
+        School latestSchool = null;
+        try {
+            latestSchool = schoolService.findALatestSchool();
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", latestSchool));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+
+    }
+    @GetMapping("/count-by-month/{year}")
+    public ResponseEntity<MessageResponse> countSchoolsByMonth(@PathVariable int year) {
+
+        List<Object[]> data = null;
+        try {
+            data = schoolService.countSchoolsByMonth(year);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", data));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
 
     @GetMapping("/all")
     public ResponseEntity<MessageResponse> getAllSchool_Id() {
@@ -81,6 +117,16 @@ public class SchoolController {
                     .address(address)
                     .build();
             schoolService.updateSchool(school);
+
+            User user_admin = userRepository.findByUsername("admin").orElse(null);
+            assert user_admin != null;
+            Notification notification_1 = Notification.builder()
+                    .sender(user_admin)
+                    .receiver(user_admin)
+                    .content(user_admin.getUsername() + " đã tạo 1 nhà trường thành công")
+                    .build();
+            notificationRepository.save(notification_1);
+
             return ResponseEntity.ok(new MessageResponse(0, "Create New School successfully!", null));
 
         } catch (Exception e) {
@@ -128,6 +174,14 @@ public class SchoolController {
             }
 
             schoolService.updateSchool(schoolFind);
+            User user_admin = userRepository.findByUsername("admin").orElse(null);
+            assert user_admin != null;
+            Notification notification_1 = Notification.builder()
+                    .sender(user_admin)
+                    .receiver(user_admin)
+                    .content(user_admin.getUsername() + " đã sửa 1 nhà trường thành công")
+                    .build();
+            notificationRepository.save(notification_1);
             return ResponseEntity
                     .ok()
                     .body(new MessageResponse(0, "Update School Success", null));

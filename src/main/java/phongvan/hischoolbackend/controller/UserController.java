@@ -62,12 +62,131 @@ public class UserController {
         }
 
     }
+
+
+    @GetMapping("/count-by-month/{year}")
+    public ResponseEntity<MessageResponse> countUsersByMonth(@PathVariable int year) {
+
+        List<Object[]> data = null;
+        try {
+            data = userService.countUsersByMonth(year);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", data));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
     @GetMapping("/count-notification")
     public ResponseEntity<MessageResponse> countNumberNotificationsUnRead(@RequestParam String username) {
 
         Integer number = 0;
         try {
             number = userService.countNumberNotificationsUnRead(username);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "GET DATA SUCCESS", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "SOMETHING WENT WRONG IN SERVER", null));
+        }
+
+    }
+
+    @GetMapping("/count-users")
+    public ResponseEntity<MessageResponse> countNumberUsers(@RequestParam String username) {
+
+        Integer number = 0;
+        try {
+            number = userService.countNumberUsers(username);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "GET DATA SUCCESS", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "SOMETHING WENT WRONG IN SERVER", null));
+        }
+
+    }
+    @GetMapping("/count-all-users")
+    public ResponseEntity<MessageResponse> countNumberAllUsers(@RequestParam String username) {
+
+        Integer number = 0;
+        try {
+            number = userService.countNumberAllUsers(username);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "GET DATA SUCCESS", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "SOMETHING WENT WRONG IN SERVER", null));
+        }
+
+    }
+    @GetMapping("/count-users-today")
+    public ResponseEntity<MessageResponse> countNumberUsersToday(@RequestParam String username, @RequestParam String today) {
+        int number = 0;
+        System.out.println(username);
+        try {
+            number = userService.countNumberUsersToday(username,today);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "GET DATA SUCCESS", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "SOMETHING WENT WRONG IN SERVER", null));
+        }
+
+    }
+    @GetMapping("/count-all-users-today")
+    public ResponseEntity<MessageResponse> countNumberAllUsersToday(@RequestParam String username, @RequestParam String today) {
+        Integer number = 0;
+        try {
+            number = userService.countNumberAllUsersToday(username,today);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "GET DATA SUCCESS", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "SOMETHING WENT WRONG IN SERVER", null));
+        }
+
+    }
+    @GetMapping("/count-schools")
+    public ResponseEntity<MessageResponse> countNumberSchools(@RequestParam String username) {
+
+        Integer number = 0;
+        try {
+            number = userService.countNumberSchools(username);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "GET DATA SUCCESS", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "SOMETHING WENT WRONG IN SERVER", null));
+        }
+
+    }
+    @GetMapping("/count-schools-today")
+    public ResponseEntity<MessageResponse> countNumberSchoolsToday(@RequestParam String username, @RequestParam String today) {
+        Integer number = 0;
+        try {
+            number = userService.countNumberSchoolsToday(username,today);
             return ResponseEntity
                     .ok()
                     .body(new MessageResponse(0, "GET DATA SUCCESS", number));
@@ -96,11 +215,11 @@ public class UserController {
         }
 
     }
-    @GetMapping("/read/managers")
-    public ResponseEntity<MessageResponse> getUsersWithManagerRole(@RequestParam int page, @RequestParam int limit) {
+    @GetMapping("/{username}/read/managers")
+    public ResponseEntity<MessageResponse> getUsersWithManagerRole(@RequestParam int page, @RequestParam int limit,@PathVariable String username) {
         Page<User> userPage = null;
         try {
-            userPage = userService.findPaginatedUsersWithManagerRole(PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "id")));
+            userPage = userService.findPaginatedUsersWithManagerRole(username,PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "id")));
             return ResponseEntity.ok().body(new MessageResponse(0, "GET MANAGER USERS SUCCESS", userPage));
         } catch (Exception e) {
             return ResponseEntity.ok().body(new MessageResponse(-1, "SOMETHING WENT WRONG IN SERVER", null));
@@ -164,7 +283,7 @@ public class UserController {
             Role newRole = roleRepository.getById(userRequest.getRoleId());
             newRoles.add(newRole);
 
-            Integer newSchoolId = userRequest.getSchoolId();
+            Integer newSchoolId = userRequest.getSchool().getId();
             School newSchool = schoolRepository.getById(newSchoolId);
             userFind.setSchool(newSchool);
 
@@ -179,6 +298,19 @@ public class UserController {
                 userFind.setRoles(newRoles);
             }
             userService.updateUser(userFind);
+            User user_admin = userService.anUser("admin");
+            Notification notification_1 = Notification.builder()
+                    .sender(user_admin)
+                    .receiver(user_admin)
+                    .content(user_admin.getUsername() + " đã sửa 1 tài khoản thành công")
+                    .build();
+            notificationRepository.save(notification_1);
+            Notification notification_2 = Notification.builder()
+                    .sender(null)
+                    .receiver(userFind)
+                    .content("Sửa tài khoản thành công: "+ userFind.getUsername())
+                    .build();
+            notificationRepository.save(notification_2);
             return ResponseEntity
                     .ok()
                     .body(new MessageResponse(0, "UPDATE USER SUCCESS", null));

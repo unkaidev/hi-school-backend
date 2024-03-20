@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import phongvan.hischoolbackend.Repository.NotificationRepository;
-import phongvan.hischoolbackend.Repository.StudentRepository;
-import phongvan.hischoolbackend.Repository.TeacherRepository;
-import phongvan.hischoolbackend.Repository.UserRepository;
+import phongvan.hischoolbackend.Repository.*;
 import phongvan.hischoolbackend.entity.*;
+import phongvan.hischoolbackend.utils.DateUtils;
 
 import java.beans.Encoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -25,6 +25,10 @@ public class UserService {
     PasswordEncoder encoder;
     @Autowired
     NotificationRepository notificationRepository;
+    @Autowired
+    RoleRepository roleRepository;
+    @Autowired
+    SchoolRepository schoolRepository;
 
     public User anUser(String username) {
         Optional<User> user = userRepository.findByUsername(username);
@@ -55,23 +59,34 @@ public class UserService {
         return userPage;
     }
 
-    public Page<User> findPaginatedUsersWithManagerRole(Pageable pageable) {
-        List<User> usersWithManagerRole = userRepository.findAllByRoles_Name(ERole.ROLE_MANAGER, Sort.by(Sort.Direction.DESC, "id"));
+    public Page<User> findPaginatedUsersWithManagerRole(String username, Pageable pageable) {
+        User user = userRepository.findByUsername(username).orElse(null);
+        List<User> users = new ArrayList<>();
+        Role role_admin = roleRepository.findByName(ERole.ROLE_ADMIN).orElse(null);
+
+        if(user !=null){
+            if(user.getRoles().contains(role_admin)){
+                users = userRepository.findAllByRoles_Name(ERole.ROLE_MANAGER, Sort.by(Sort.Direction.DESC, "id"));
+            }else {
+                users = userRepository.findAllByRoles_NameAndSchool_Id(ERole.ROLE_MANAGER,user.getSchool().getId(), Sort.by(Sort.Direction.DESC, "id"));
+            }
+        }
+
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
         List<User> list;
 
-        if (usersWithManagerRole.size() < startItem) {
+        if (users.size() < startItem) {
             list = Collections.emptyList();
         } else {
-            int toIndex = Math.min(startItem + pageSize, usersWithManagerRole.size());
-            list = usersWithManagerRole.subList(startItem, toIndex);
+            int toIndex = Math.min(startItem + pageSize, users.size());
+            list = users.subList(startItem, toIndex);
         }
 
         PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
-        return new PageImpl<>(list, pageRequest, usersWithManagerRole.size());
+        return new PageImpl<>(list, pageRequest, users.size());
     }
 
     public Page<User> findPaginatedUsersWithoutManagerAndAdminAndSchool(Integer schoolId, Pageable pageable) {
@@ -192,4 +207,110 @@ public class UserService {
         Page<Notification> page = new PageImpl<>(list, pageRequest, notifications.size());
         return page;
     }
+
+    public Integer countNumberUsers(String username) {
+        User user = userRepository.findByUsername(username).orElse(null);
+        Role role_admin = roleRepository.findByName(ERole.ROLE_ADMIN).orElse(null);
+        if (user != null) {
+            if(user.getRoles().contains(role_admin)){
+                List<User> users = userRepository.findAllByRoles_Name(ERole.ROLE_MANAGER,Sort.by(Sort.Direction.DESC, "id"));
+                return users.size();
+            }else {
+                List<User> users = userRepository.findAllByRoles_NameAndSchool_Id(ERole.ROLE_MANAGER,user.getSchool().getId(),Sort.by(Sort.Direction.DESC, "id"));
+                return users.size();
+            }
+        }
+        return 0;
+    }
+
+    public Integer countNumberSchools(String username) {
+        User user = userRepository.findByUsername(username).orElse(null);
+        Role role_admin = roleRepository.findByName(ERole.ROLE_ADMIN).orElse(null);
+        if (user != null) {
+            if(user.getRoles().contains(role_admin)){
+                List<School> schools = schoolRepository.findAll();
+                return schools.size();
+            }
+        }
+        return 0;
+    }
+
+    public Integer countNumberUsersToday(String username, String today) throws ParseException {
+            User user = userRepository.findByUsername(username).orElse(null);
+            Role role_admin = roleRepository.findByName(ERole.ROLE_ADMIN).orElse(null);
+
+            Date date = DateUtils.parseDate(today);
+            Calendar startOfDay = DateUtils.getStartOfDay(date);
+            Calendar endOfDay = DateUtils.getEndOfDay(date);
+
+            int number = 0;
+            if (user != null) {
+                List<User> users;
+                if(user.getRoles().contains(role_admin)){
+                    users = userRepository.findAllByRoles_NameAndCreatedAtBetween(ERole.ROLE_MANAGER, startOfDay.getTime(), endOfDay.getTime(), Sort.by(Sort.Direction.DESC, "id"));
+                } else {
+                    users = userRepository.findAllByRoles_NameAndSchool_IdAndCreatedAtBetween(ERole.ROLE_MANAGER,user.getSchool().getId(), startOfDay.getTime(), endOfDay.getTime());
+                }
+                number = users.size();
+            }
+            return number;
+
+    }
+
+    public Integer countNumberSchoolsToday(String username, String today) throws ParseException {
+        User user = userRepository.findByUsername(username).orElse(null);
+        Role role_admin = roleRepository.findByName(ERole.ROLE_ADMIN).orElse(null);
+        Date date = DateUtils.parseDate(today);
+        Calendar startOfDay = DateUtils.getStartOfDay(date);
+        Calendar endOfDay = DateUtils.getEndOfDay(date);
+
+        if (user != null) {
+            if(user.getRoles().contains(role_admin)){
+                List<School> schools = schoolRepository.findAllByCreatedAtBetween(startOfDay.getTime(), endOfDay.getTime());
+                return schools.size();
+            }
+        }
+        return 0;
+    }
+
+    public Integer countNumberAllUsers(String username) {
+        User user = userRepository.findByUsername(username).orElse(null);
+        Role role_admin = roleRepository.findByName(ERole.ROLE_ADMIN).orElse(null);
+        if (user != null) {
+            if(user.getRoles().contains(role_admin)){
+                List<User> users = userRepository.findAll();
+                return users.size();
+            }else {
+                List<User> users = userRepository.findAllBySchool_Id(user.getSchool().getId());
+                return users.size();
+            }
+        }
+        return 0;
+    }
+
+    public Integer countNumberAllUsersToday(String username, String today) throws ParseException {
+        User user = userRepository.findByUsername(username).orElse(null);
+        Role role_admin = roleRepository.findByName(ERole.ROLE_ADMIN).orElse(null);
+
+        Date date = DateUtils.parseDate(today);
+        Calendar startOfDay = DateUtils.getStartOfDay(date);
+        Calendar endOfDay = DateUtils.getEndOfDay(date);
+
+        if (user != null) {
+            if(user.getRoles().contains(role_admin)){
+                List<User> users = userRepository.findAllByCreatedAtBetween(startOfDay.getTime(), endOfDay.getTime());
+                return users.size();
+            }else {
+                List<User> users = userRepository.findAllBySchool_IdAndCreatedAtBetween(user.getSchool().getId(), startOfDay.getTime(), endOfDay.getTime());
+                return users.size();
+            }
+        }
+        return 0;
+    }
+
+    public List<Object[]> countUsersByMonth(int year) {
+        return userRepository.countUsersByMonth(year);
+    }
+
+
 }

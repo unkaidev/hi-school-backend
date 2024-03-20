@@ -13,7 +13,9 @@ import phongvan.hischoolbackend.Repository.RoleRepository;
 import phongvan.hischoolbackend.Repository.UserRepository;
 import phongvan.hischoolbackend.entity.*;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -58,7 +60,7 @@ public class HiSchoolBackEndApplication {
         UserRepository userRepository = context.getBean(UserRepository.class);
         Set<Role> roles = Set.of(new Role(1, ERole.ROLE_ADMIN));
         if (userRepository.count() == 0) {
-            User admin = new User(1, "admin", "admin@gmail.com", "0100100110", ("$2a$10$WNNEzZPQRB9q9NCRXkzXQe.atwgahpIVV.JQSWDvd0xV25kpTM5PO"), "MALE", roles, null,null,null, true);
+            User admin = new User(1, "admin", "admin@gmail.com", "0100100110", ("$2a$10$WNNEzZPQRB9q9NCRXkzXQe.atwgahpIVV.JQSWDvd0xV25kpTM5PO"), "MALE", roles, null,null,null, new Date(),new Date(),true);
             userRepository.save(admin);
         }
     }

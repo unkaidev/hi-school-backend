@@ -9,7 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,6 +22,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "_school")
 public class School {
     @Id
@@ -31,6 +36,16 @@ public class School {
     @OneToMany(mappedBy = "school")
     @JsonIgnore
     private List<SchoolYear> schoolYears;
+
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Date createdAt;
+
+    @LastModifiedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date updatedAt;
 
     @Override
     public String toString() {

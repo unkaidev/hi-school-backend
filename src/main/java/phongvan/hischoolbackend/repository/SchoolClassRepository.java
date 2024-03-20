@@ -5,10 +5,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import phongvan.hischoolbackend.entity.*;
 import phongvan.hischoolbackend.entity.SchoolClass;
-import phongvan.hischoolbackend.entity.SchoolYear;
-import phongvan.hischoolbackend.entity.SchoolClass;
-import phongvan.hischoolbackend.entity.Student;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +27,8 @@ public interface SchoolClassRepository extends JpaRepository<SchoolClass,Integer
     List<SchoolClass> findAllBySchoolYear(SchoolYear schoolYear, Sort id);
 
     boolean existsByNameAndSchoolYear_Id(String schoolClassName, Integer id);
+
+    boolean existsBySchoolYearAndTeacher(SchoolYear schoolYear, Teacher teacher);
 
     List<SchoolClass> findAllBySchoolYear_Id(int yearId, Sort id);
 

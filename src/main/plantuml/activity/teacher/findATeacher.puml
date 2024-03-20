@@ -1,0 +1,20 @@
+@startuml
+
+(*) --> "Receive a request to find a teacher by last name"
+
+if "Request: aTeacher" then
+    --> "Search for the teacher by last name"
+    --> if "Found teacher" then
+        --> "Return the teacher"
+        --> (*)
+    else
+        --> "Return null (teacher not found)"
+        --> (*)
+    endif
+else
+    --> "Invalid request"
+    --> "Return null (teacher not found)"
+    --> (*)
+endif
+
+@enduml

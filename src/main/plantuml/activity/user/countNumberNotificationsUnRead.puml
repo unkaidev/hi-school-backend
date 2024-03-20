@@ -1,0 +1,22 @@
+@startuml
+
+(*) --> "Receive a request to count unread notifications for a user"
+
+if "Request: countNumberNotificationsUnRead" then
+    --> "Retrieve the user by username"
+    --> if "User found" then
+        --> "Retrieve unread notifications for the user"
+        --> "Count the number of unread notifications"
+        --> "Return the count"
+        --> (*)
+    else
+        --> "Return 0 (user not found)"
+        --> (*)
+    endif
+else
+    --> "Invalid request"
+    --> "Return 0 (user not found)"
+    --> (*)
+endif
+
+@enduml

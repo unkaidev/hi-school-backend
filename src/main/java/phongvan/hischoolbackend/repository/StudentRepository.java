@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import phongvan.hischoolbackend.entity.School;
 import phongvan.hischoolbackend.entity.Student;
 import phongvan.hischoolbackend.entity.User;
 
@@ -23,5 +24,6 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     Student findFirstByOrderByIdDesc();
 
     Student findByUser(User user);
+
 
 }

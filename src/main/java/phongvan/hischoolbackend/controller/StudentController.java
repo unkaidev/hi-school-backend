@@ -68,6 +68,24 @@ public class StudentController {
         }
 
     }
+
+    @GetMapping("/latest")
+    public ResponseEntity<MessageResponse> getUserLatest(@RequestParam String username) {
+        Student latestUser = null;
+        try {
+            latestUser = studentService.findALatestStudent(username);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", latestUser));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+
+    }
+
     @GetMapping("/view")
     public ResponseEntity<MessageResponse> getStudentInClassWithPagination(@RequestParam int page, @RequestParam int limit, @RequestParam int schoolClassId) {
 
@@ -85,6 +103,7 @@ public class StudentController {
         }
 
     }
+
     @GetMapping("/add")
     public ResponseEntity<MessageResponse> getStudentNotInClassWithPagination(@RequestParam int page, @RequestParam int limit, @RequestParam int schoolClassId) {
 
@@ -103,6 +122,7 @@ public class StudentController {
 
     }
 
+    @Transactional
     @PostMapping("/create")
     public ResponseEntity<?> addStudent(@Valid @RequestBody StudentRequest studentRequest) {
         try {
@@ -111,7 +131,7 @@ public class StudentController {
             String newLastName = studentRequest.getLastName().toUpperCase();
             String newDateOfBirth = studentRequest.getDateOfBirth();
             String newGender = studentRequest.getGender();
-            if (newGender.isBlank() || newGender.isEmpty()){
+            if (newGender.isBlank() || newGender.isEmpty()) {
                 newGender = "Nam";
             }
             String newNationality = studentRequest.getNationality();
@@ -126,7 +146,7 @@ public class StudentController {
             addressRepository.save(newContactAddress);
             String newParentFirstName = studentRequest.getParent().getFirstName().toUpperCase();
             String newParentLastName = studentRequest.getParent().getLastName().toUpperCase();
-            Integer schoolId = studentRequest.getUser().getSchoolId();
+            Integer schoolId = studentRequest.getUser().getSchool().getId();
             School newSchool = schoolRepository.getById(schoolId);
 
             Parent newParent = Parent.builder()
@@ -179,6 +199,7 @@ public class StudentController {
 
     }
 
+    @Transactional
     @PostMapping("/delete/{id}")
     public ResponseEntity<MessageResponse> deleteStudent(@PathVariable int id) {
         try {
@@ -192,10 +213,12 @@ public class StudentController {
                     .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
         }
     }
+
+    @Transactional
     @PostMapping("{schoolClassId}/remove/{studentId}")
     public ResponseEntity<MessageResponse> removeStudentFromClass(@PathVariable int schoolClassId, @PathVariable int studentId) {
         try {
-            studentService.removeStudentFromClass(schoolClassId,studentId);
+            studentService.removeStudentFromClass(schoolClassId, studentId);
             return ResponseEntity
                     .ok()
                     .body(new MessageResponse(0, "Remove Student And Remove Transcript Success", null));
@@ -205,10 +228,12 @@ public class StudentController {
                     .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
         }
     }
+
+    @Transactional
     @PostMapping("{schoolClassId}/add/{studentId}")
     public ResponseEntity<MessageResponse> addStudentFromClass(@PathVariable int schoolClassId, @PathVariable int studentId) {
         try {
-            studentService.addStudentFromClass(schoolClassId,studentId);
+            studentService.addStudentFromClass(schoolClassId, studentId);
             return ResponseEntity
                     .ok()
                     .body(new MessageResponse(0, "Add Student And Add Transcript Success", null));
@@ -219,10 +244,11 @@ public class StudentController {
         }
     }
 
+    @Transactional
     @PostMapping("{schoolClassId}/add-many/{students}")
     public ResponseEntity<MessageResponse> addStudentsFromClass(@PathVariable int schoolClassId, @PathVariable List<Integer> students) {
         try {
-            studentService.addManyStudentsFromClass(schoolClassId,students);
+            studentService.addManyStudentsFromClass(schoolClassId, students);
             return ResponseEntity
                     .ok()
                     .body(new MessageResponse(0, "Add Many Student And Add Many Transcript Success", null));
@@ -232,10 +258,11 @@ public class StudentController {
                     .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
         }
     }
+    @Transactional
     @PostMapping("{schoolClassId}/remove-many/{students}")
     public ResponseEntity<MessageResponse> removeStudentsFromClass(@PathVariable int schoolClassId, @PathVariable List<Integer> students) {
         try {
-            studentService.removeManyStudentsFromClass(schoolClassId,students);
+            studentService.removeManyStudentsFromClass(schoolClassId, students);
             return ResponseEntity
                     .ok()
                     .body(new MessageResponse(0, "Remove Many Student And Add Many Transcript Success", null));
@@ -252,7 +279,7 @@ public class StudentController {
         try {
             Student studentFind = studentService.findById(studentRequest.getId());
             String newGender = studentRequest.getGender();
-            if (newGender.isBlank() || newGender.isEmpty()){
+            if (newGender.isBlank() || newGender.isEmpty()) {
                 newGender = "Nam";
             }
             studentFind.getUser().setGender(newGender);

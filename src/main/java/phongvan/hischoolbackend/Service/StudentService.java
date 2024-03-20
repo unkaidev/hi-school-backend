@@ -184,5 +184,11 @@ public class StudentService {
         return new PageImpl<>(list, pageRequest, totalStudents);
     }
 
-
+    public Student findALatestStudent(String username) {
+        User user = userRepository.findByUsername(username).orElse(null);
+        assert user != null;
+        User userFind =  userRepository.findFirstBySchoolOrderByCreatedAtDesc(user.getSchool()).orElse(null);
+        assert userFind != null;
+        return userFind.getStudent();
+    }
 }

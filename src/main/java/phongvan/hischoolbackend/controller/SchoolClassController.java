@@ -142,12 +142,12 @@ public class SchoolClassController {
     }
        @GetMapping("/all-for-headteacher/{username}/{semesterId}")
     public ResponseEntity<MessageResponse> findAllBySemesterIdAndHeadTeacher(@PathVariable String username,@PathVariable int semesterId) {
-        List<SchoolClass> schoolClassList = null;
+        Set<SchoolClass> schoolClasses = null;
         try {
-            schoolClassList = schoolClassService.findAllBySemesterIdAndHeadTeacher(semesterId, username);
+            schoolClasses = schoolClassService.findAllBySemesterIdAndHeadTeacher(semesterId, username);
             return ResponseEntity
                     .ok()
-                    .body(new MessageResponse(0, "Get Data Success", schoolClassList));
+                    .body(new MessageResponse(0, "Get Data Success", schoolClasses));
 
         } catch (Exception e) {
             return ResponseEntity

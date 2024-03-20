@@ -204,8 +204,8 @@ public class SchoolClassService {
         return schoolClassList;
     }
 
-    public List<SchoolClass> findAllBySemesterIdAndHeadTeacher(int semesterId, String username) {
-        List<SchoolClass> schoolClasses = new ArrayList<>();
+    public Set<SchoolClass> findAllBySemesterIdAndHeadTeacher(int semesterId, String username) {
+        Set<SchoolClass> schoolClasses = new HashSet<>();
 
         List<TeacherAssignment> assignmentList = teacherAssignmentRepository.findAllBySemester_Id(semesterId);
         for (TeacherAssignment assignment : assignmentList

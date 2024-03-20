@@ -19,6 +19,7 @@ import phongvan.hischoolbackend.entity.Score;
 import phongvan.hischoolbackend.entity.Transcript;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/v1/score")
@@ -101,8 +102,7 @@ public class ScoreController {
             Notification newNotification = Notification.builder()
                     .sender(scoreFind.getTeacher().getUser())
                     .receiver(scoreFind.getStudent().getUser())
-                    .content("Có cập nhật điểm mới")
-                    .timestamp(LocalDate.now())
+                    .content("Có cập nhật điểm mới môn: " + scoreFind.getSubject())
                     .isRead(false)
                     .build();
             notificationRepository.save(newNotification);

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import phongvan.hischoolbackend.entity.SchoolClass;
 
 import java.util.Set;
 
@@ -29,5 +30,6 @@ public class UserRequest {
     @NotBlank
     private boolean active;
 
-    private int schoolId;
+    private SchoolClassRequest school;
+    private Integer schoolId;
 }

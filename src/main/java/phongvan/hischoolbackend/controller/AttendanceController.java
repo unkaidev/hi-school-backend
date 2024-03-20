@@ -18,6 +18,7 @@ import phongvan.hischoolbackend.entity.*;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -60,8 +61,7 @@ public class AttendanceController {
             Notification newNotification = Notification.builder()
                     .sender(attendance.getTeacher().getUser())
                     .receiver(attendance.getStudent().getUser())
-                    .content("Cập nhật điểm danh mới")
-                    .timestamp(LocalDate.now())
+                    .content("Cập nhật điểm danh mới ngày: " + attendance.getTimeTable().getStudyDate())
                     .isRead(false)
                     .build();
             notificationRepository.save(newNotification);

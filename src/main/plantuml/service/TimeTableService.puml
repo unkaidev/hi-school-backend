@@ -1,0 +1,26 @@
+@startuml
+
+package phongvan.hischoolbackend.Service {
+    @startuml
+    class TimeTableDetailService {
+        - repository: TimeTableDetailRepository
+        - timeTableRepository: TimeTableRepository
+        - schoolClassRepository: SchoolClassRepository
+        - userRepository: UserRepository
+        - teacherRepository: TeacherRepository
+        - studentRepository: StudentRepository
+
+        + findPaginated(semesterId: int, schoolClassId: int, pageable: Pageable): Page<TimeTableDetail>
+        + save(newTableDetail: TimeTableDetail): void
+        + deleteTimeDate(id: int): void
+        + deleteManyTimeDate(timeTables: List<Integer>): void
+        + ATimeTableDetail(id: int): TimeTableDetail
+        + findAllByTeacherAndSubject(subject: Subject, teacher: Teacher): List<TimeTableDetail>
+        + findById(id: Integer): TimeTableDetail
+        + findALlByTeacher(username: String): List<TimeTableDetail>
+        + findAllByStudent(username: String): List<TimeTableDetail>
+    }
+    @enduml
+}
+
+@enduml

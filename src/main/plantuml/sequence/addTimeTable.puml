@@ -1,0 +1,64 @@
+@startuml
+
+actor Client
+participant "Controller: TimeTableController" as Controller
+participant "TimeTableRequest" as TimeTableRequest
+participant "ScheduleRequest" as ScheduleRequest
+participant "TeacherRepository" as TeacherRepository
+participant "SchoolClassRepository" as SchoolClassRepository
+participant "SubjectRepository" as SubjectRepository
+participant "ScheduleRepository" as ScheduleRepository
+participant "TimeTableService" as TimeTableService
+participant "TeacherAssignmentRepository" as TeacherAssignmentRepository
+participant "NotificationRepository" as NotificationRepository
+participant "Notification" as Notification
+participant "TimeTableDetail" as TimeTableDetail
+participant "AttendanceRepository" as AttendanceRepository
+participant "ScoreRepository" as ScoreRepository
+participant "Score" as Score
+participant "MessageResponse" as MessageResponse
+
+Client -> Controller: send TimeTableRequest
+activate Controller
+Controller -> TimeTableRequest: getClassComment()
+Controller -> TimeTableRequest: getTeacher()
+Controller -> TimeTableRequest: getSchoolClass()
+Controller -> TimeTableRequest: getSubject()
+Controller -> TimeTableRequest: getSchedules()
+Controller -> TimeTableRequest: getTimeWeeks()
+Controller -> TimeTableRequest: getTimeDays()
+deactivate Controller
+
+activate TimeTableRequest
+Controller -> TimeTableService: findAllByWeekAndDay()
+activate TimeTableService
+TimeTableService -> ScheduleRepository: findById()
+ScheduleRepository --> TimeTableService: Schedule
+TimeTableService -> SubjectRepository: getById()
+SubjectRepository --> TimeTableService: Subject
+TimeTableService -> TeacherRepository: getById()
+TeacherRepository --> TimeTableService: Teacher
+TimeTableService -> SchoolClassRepository: getById()
+SchoolClassRepository --> TimeTableService: SchoolClass
+TimeTableService -> TeacherAssignmentRepository: save()
+TeacherAssignmentRepository --> TimeTableService: List<TeacherAssignment>
+TimeTableService -> NotificationRepository: save()
+NotificationRepository --> TimeTableService: Notification
+TimeTableService -> TimeTableDetail: save()
+TimeTableDetail --> TimeTableService: TimeTableDetail
+TimeTableService -> AttendanceRepository: save()
+AttendanceRepository --> TimeTableService: Attendance
+TimeTableService -> ScoreRepository: findByStudentAndSubject()
+ScoreRepository --> TimeTableService: Score
+TimeTableService -> ScoreRepository: save()
+ScoreRepository --> TimeTableService: Score
+TimeTableService -> MessageResponse: create response
+deactivate TimeTableService
+deactivate TimeTableRequest
+
+activate MessageResponse
+Controller -> Client: send response
+deactivate Controller
+deactivate MessageResponse
+
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+
+(*) --> "Receive a request to delete a teacher by ID"
+
+if "Request: deleteTeacher" then
+    --> "Delete the teacher from the database by ID"
+    --> "Return success message"
+    --> (*)
+else
+    --> "Invalid request"
+    --> "Return error message"
+    --> (*)
+endif
+
+@enduml
