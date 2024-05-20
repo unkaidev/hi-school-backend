@@ -50,6 +50,168 @@ public class SchoolController {
         }
 
     }
+    @GetMapping("/{schoolId}/count-by-year")
+    public ResponseEntity<MessageResponse> countClassInSchoolByYear(@PathVariable int schoolId) {
+
+        List<Object[]> data = null;
+        try {
+            data = schoolService.countClassInSchoolByYear(schoolId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", data));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
+
+    @GetMapping("/{schoolId}/count-all-years")
+    public ResponseEntity<MessageResponse> countAllYearsInSchool(@PathVariable int schoolId) {
+
+        int number = 0;
+        try {
+            number = schoolService.countAllYearsInSchool(schoolId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
+    @GetMapping("/{schoolId}/count-all-semesters")
+    public ResponseEntity<MessageResponse> countAllSemestersInSchool(@PathVariable int schoolId) {
+
+        int number = 0;
+        try {
+            number = schoolService.countAllSemestersInSchool(schoolId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
+    @GetMapping("/{schoolId}/count-all-schedules")
+    public ResponseEntity<MessageResponse> countAllSchedulesInSchool(@PathVariable int schoolId) {
+
+        int number = 0;
+        try {
+            number = schoolService.countAllSchedulesInSchool(schoolId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
+    @GetMapping("/{schoolId}/count-all-subjects")
+    public ResponseEntity<MessageResponse> countAllSubjectsInSchool(@PathVariable int schoolId) {
+
+        int number = 0;
+        try {
+            number = schoolService.countAllSubjectsInSchool(schoolId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
+    @GetMapping("/{schoolId}/count-all-students")
+    public ResponseEntity<MessageResponse> countAllStudentsInSchool(@PathVariable int schoolId) {
+
+        int number = 0;
+        try {
+            number = schoolService.countAllStudentsInSchool(schoolId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
+    @GetMapping("/{schoolId}/count-all-teachers")
+    public ResponseEntity<MessageResponse> countAllTeachersInSchool(@PathVariable int schoolId) {
+
+        int number = 0;
+        try {
+            number = schoolService.countAllTeachersInSchool(schoolId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
+    @GetMapping("/{schoolId}/count-all-class")
+    public ResponseEntity<MessageResponse> countAllClassInSchool(@PathVariable int schoolId) {
+
+        int number = 0;
+        try {
+            number = schoolService.countAllClassInSchool(schoolId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
+    @GetMapping("/{schoolId}/count-all-transcripts")
+    public ResponseEntity<MessageResponse> countAllTranscriptsInSchool(@PathVariable int schoolId) {
+
+        int number = 0;
+        try {
+            number = schoolService.countAllTranscriptsInSchool(schoolId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
+    @GetMapping("/{schoolId}/{year}/{grade}/count-all-students")
+    public ResponseEntity<MessageResponse> countAllStudentsInSchool(@PathVariable int schoolId,@PathVariable int year,@PathVariable String grade) {
+
+        int number = 0;
+        try {
+            number = schoolService.countAllStudentsInSchoolByYearAndGrade(schoolId,year,grade);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", number));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
+
     @GetMapping("/count-by-month/{year}")
     public ResponseEntity<MessageResponse> countSchoolsByMonth(@PathVariable int year) {
 
@@ -130,6 +292,7 @@ public class SchoolController {
             return ResponseEntity.ok(new MessageResponse(0, "Create New School successfully!", null));
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok(new MessageResponse(-1, "Error: Create New School!", null));
         }
 

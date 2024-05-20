@@ -3,10 +3,7 @@ package phongvan.hischoolbackend.Repository;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import phongvan.hischoolbackend.entity.Attendance;
-import phongvan.hischoolbackend.entity.Student;
-import phongvan.hischoolbackend.entity.Teacher;
-import phongvan.hischoolbackend.entity.TimeTable;
+import phongvan.hischoolbackend.entity.*;
 
 import java.util.List;
 
@@ -16,10 +13,10 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
 
     List<Attendance> findAllByTimeTableAndTeacher(TimeTable timeTable, Teacher teacherInTTD);
 
-    List<Attendance> findAllByTimeTable_IdAndSchedule_IdAndTeacherId(int timeTableId, int scheduleId, int teacherId, Sort id);
-
 
     List<Attendance> findAllByStudent(Student student);
 
     List<Attendance> findAllByTimeTable_IdAndSchedule_IdAndTeacher_IdAndStudent_Id(int timeTableId, int scheduleId, int teacherId, int studentId, Sort id);
+
+    Attendance findAllByStudentAndScheduleAndTeacherAndTimeTable(Student studentToRemove, Schedule schedule, Teacher teacher, TimeTable timeTable);
 }

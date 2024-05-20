@@ -313,4 +313,7 @@ public class UserService {
     }
 
 
+    public List<Object[]> countUsersInSchoolByYear(int schoolId) {
+       return userRepository.countUsersInSchoolByYear(schoolId);
+    }
 }

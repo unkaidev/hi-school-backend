@@ -127,17 +127,10 @@
                         </includes>
                     </sourceFiles>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>generate-puml</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
+
             </plugin>
         </plugins>
+        <finalName>hiSchoolBE</finalName>
     </build>
 
 </project>

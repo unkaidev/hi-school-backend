@@ -7,9 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalTime;
+import java.util.Date;
 
 @Data
 @Builder
@@ -17,6 +21,8 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "_schedule")
+@EntityListeners(AuditingEntityListener.class)
+
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +40,15 @@ public class Schedule {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Date createdAt;
+
+    @LastModifiedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date updatedAt;
     @Override
     public String toString() {
         return "Schedule{" +

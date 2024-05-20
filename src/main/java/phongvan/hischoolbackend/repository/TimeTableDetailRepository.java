@@ -20,4 +20,5 @@ public interface TimeTableDetailRepository extends JpaRepository<TimeTableDetail
     List<TimeTableDetail> findAllByTeacher(Teacher teacher);
 
 
+    List<TimeTableDetail> findAllByTeacherAndSchoolClass(Teacher teacher, SchoolClass schoolClass);
 }

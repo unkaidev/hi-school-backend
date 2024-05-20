@@ -3,10 +3,7 @@ package phongvan.hischoolbackend.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import phongvan.hischoolbackend.Repository.SchoolClassRepository;
-import phongvan.hischoolbackend.Repository.StudentRepository;
-import phongvan.hischoolbackend.Repository.TranscriptRepository;
-import phongvan.hischoolbackend.Repository.UserRepository;
+import phongvan.hischoolbackend.Repository.*;
 import phongvan.hischoolbackend.entity.*;
 
 import java.util.*;
@@ -21,6 +18,14 @@ public class StudentService {
     SchoolClassRepository schoolClassRepository;
     @Autowired
     TranscriptRepository transcriptRepository;
+    @Autowired
+    TeacherAssignmentRepository teacherAssignmentRepository;
+    @Autowired
+    TimeTableDetailRepository timeTableDetailRepository;
+    @Autowired
+    AttendanceRepository attendanceRepository;
+    @Autowired
+    ScoreRepository scoreRepository;
 
     public Student aStudent(String lastName) {
         Optional<Student> student = studentRepository.findByLastName(lastName);
@@ -101,25 +106,72 @@ public class StudentService {
         SchoolClass schoolClass = schoolClassRepository.getById(schoolClassId);
         List<Student> studentList = new ArrayList<>(schoolClass.getStudents().stream().toList());
         Student studentToRemove = studentRepository.getById(studentId);
+        List<TeacherAssignment> teacherAssignments = teacherAssignmentRepository.findAllByClassesIsContaining(schoolClass);
+        if(teacherAssignments!=null){
+            for (TeacherAssignment teacherAssignment: teacherAssignments
+            ) {
+                Score score = scoreRepository.findByStudentAndSubjectAndTeacherAndSemester(studentToRemove,teacherAssignment.getSubject(),teacherAssignment.getTeacher(),teacherAssignment.getSemester());
+                if(score!=null){
+                    scoreRepository.delete(score);
+                }
+                List<TimeTableDetail> timeTableDetails = timeTableDetailRepository.findAllByTeacherAndSchoolClass(teacherAssignment.getTeacher(),schoolClass);
+                if(timeTableDetails!=null){
+                    for (TimeTableDetail timeTableDetail: timeTableDetails
+                    ) {
+                        Attendance attendance = attendanceRepository.findAllByStudentAndScheduleAndTeacherAndTimeTable(studentToRemove,timeTableDetail.getSchedule(),teacherAssignment.getTeacher(),timeTableDetail.getTimeTable());
+
+                        if(attendance!=null){
+                            attendanceRepository.delete(attendance);
+                        }
+                    }
+
+                }
+            }
+
+        }
         studentList.remove(studentToRemove);
         schoolClass.setStudents(studentList);
         Transcript transcript = transcriptRepository.findByStudentAndSchoolYear(studentToRemove, schoolClass.getSchoolYear());
         transcriptRepository.delete(transcript);
         schoolClassRepository.save(schoolClass);
+
     }
 
     public void removeManyStudentsFromClass(int schoolClassId, List<Integer> students) {
         SchoolClass schoolClass = schoolClassRepository.getById(schoolClassId);
-        List<Student> studentList = new ArrayList<>(schoolClass.getStudents().stream().toList());
+        List<Student> studentList = new ArrayList<>(schoolClass.getStudents());
+
         for (Integer studentId : students) {
             Student studentToRemove = studentRepository.getById(studentId);
-            studentList.remove(studentToRemove);
+
+            List<TeacherAssignment> teacherAssignments = teacherAssignmentRepository.findAllByClassesIsContaining(schoolClass);
+            for (TeacherAssignment teacherAssignment : teacherAssignments) {
+                Score score = scoreRepository.findByStudentAndSubjectAndTeacherAndSemester(studentToRemove, teacherAssignment.getSubject(), teacherAssignment.getTeacher(), teacherAssignment.getSemester());
+                if (score != null) {
+                    scoreRepository.delete(score);
+                }
+            }
+
+            for (TeacherAssignment teacherAssignment : teacherAssignments) {
+                List<TimeTableDetail> timeTableDetails = timeTableDetailRepository.findAllByTeacherAndSchoolClass(teacherAssignment.getTeacher(), schoolClass);
+                for (TimeTableDetail timeTableDetail : timeTableDetails) {
+                    Attendance attendance = attendanceRepository.findAllByStudentAndScheduleAndTeacherAndTimeTable(studentToRemove, timeTableDetail.getSchedule(), teacherAssignment.getTeacher(), timeTableDetail.getTimeTable());
+                    if (attendance != null) {
+                        attendanceRepository.delete(attendance);
+                    }
+                }
+            }
+
             Transcript transcript = transcriptRepository.findByStudentAndSchoolYear(studentToRemove, schoolClass.getSchoolYear());
             transcriptRepository.delete(transcript);
+
+            studentList.remove(studentToRemove);
         }
+
         schoolClass.setStudents(studentList);
         schoolClassRepository.save(schoolClass);
     }
+
 
     public void addStudentFromClass(int schoolClassId, int studentId) {
         SchoolClass schoolClass = schoolClassRepository.getById(schoolClassId);
@@ -133,21 +185,90 @@ public class StudentService {
                 .build();
         transcriptRepository.save(newTranscript);
         schoolClassRepository.save(schoolClass);
+        List<TeacherAssignment> teacherAssignments = teacherAssignmentRepository.findAllByClassesIsContaining(schoolClass);
+        if(teacherAssignments!=null){
+            for (TeacherAssignment teacherAssignment: teacherAssignments
+                 ) {
+                if (!teacherAssignment.getTeacher().getGroup().equals("Ban giám hiệu")){
+                    Score score = Score.builder()
+                            .dailyScore(0.0)
+                            .midtermScore(0.0)
+                            .finalScore(0.0)
+                            .subjectScore(0.0)
+                            .student(studentToAdd)
+                            .teacher(teacherAssignment.getTeacher())
+                            .subject(teacherAssignment.getSubject())
+                            .semester(teacherAssignment.getSemester())
+                            .build();
+                    scoreRepository.save(score);
+
+                }
+                List<TimeTableDetail> timeTableDetails = timeTableDetailRepository.findAllByTeacherAndSchoolClass(teacherAssignment.getTeacher(),schoolClass);
+                if(timeTableDetails!=null){
+                    for (TimeTableDetail timeTableDetail: timeTableDetails
+                         ) {
+                        Attendance attendance = Attendance.builder()
+                                .schedule(timeTableDetail.getSchedule())
+                                .student(studentToAdd)
+                                .teacher(teacherAssignment.getTeacher())
+                                .isPresent(true)
+                                .timeTable(timeTableDetail.getTimeTable())
+                                .build();
+                        attendanceRepository.save(attendance);
+                    }
+
+                }
+                }
+
+        }
     }
 
     public void addManyStudentsFromClass(int schoolClassId, List<Integer> students) {
         SchoolClass schoolClass = schoolClassRepository.getById(schoolClassId);
-        List<Student> studentList = new ArrayList<>(schoolClass.getStudents().stream().toList());
+        List<Student> studentList = new ArrayList<>(schoolClass.getStudents());
 
         for (Integer studentId : students) {
             Student studentToAdd = studentRepository.getById(studentId);
             studentList.add(studentToAdd);
+
             Transcript newTranscript = Transcript.builder()
                     .student(studentToAdd)
                     .schoolYear(schoolClass.getSchoolYear())
                     .build();
             transcriptRepository.save(newTranscript);
+
+            List<TeacherAssignment> teacherAssignments = teacherAssignmentRepository.findAllByClassesIsContaining(schoolClass);
+            for (TeacherAssignment teacherAssignment : teacherAssignments) {
+                if (!teacherAssignment.getTeacher().getGroup().equals("Ban giám hiệu")) {
+                    Score score = Score.builder()
+                            .dailyScore(0.0)
+                            .midtermScore(0.0)
+                            .finalScore(0.0)
+                            .subjectScore(0.0)
+                            .student(studentToAdd)
+                            .teacher(teacherAssignment.getTeacher())
+                            .subject(teacherAssignment.getSubject())
+                            .semester(teacherAssignment.getSemester())
+                            .build();
+                    scoreRepository.save(score);
+                }
+            }
+
+            for (TeacherAssignment teacherAssignment : teacherAssignments) {
+                List<TimeTableDetail> timeTableDetails = timeTableDetailRepository.findAllByTeacherAndSchoolClass(teacherAssignment.getTeacher(), schoolClass);
+                for (TimeTableDetail timeTableDetail : timeTableDetails) {
+                    Attendance attendance = Attendance.builder()
+                            .schedule(timeTableDetail.getSchedule())
+                            .student(studentToAdd)
+                            .teacher(teacherAssignment.getTeacher())
+                            .isPresent(true)
+                            .timeTable(timeTableDetail.getTimeTable())
+                            .build();
+                    attendanceRepository.save(attendance);
+                }
+            }
         }
+
         schoolClass.setStudents(studentList);
         schoolClassRepository.save(schoolClass);
     }
@@ -187,7 +308,8 @@ public class StudentService {
     public Student findALatestStudent(String username) {
         User user = userRepository.findByUsername(username).orElse(null);
         assert user != null;
-        User userFind =  userRepository.findFirstBySchoolOrderByCreatedAtDesc(user.getSchool()).orElse(null);
+        List<User> users_students = userRepository.findAllByRoles_NameAndSchool_Id(ERole.ROLE_USER, user.getSchool().getId(), Sort.by(Sort.Direction.DESC, "id"));
+        User userFind = users_students.get(0);
         assert userFind != null;
         return userFind.getStudent();
     }

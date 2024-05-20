@@ -29,4 +29,8 @@ public interface SchoolRepository extends JpaRepository<School, Integer> {
 
     @Query("SELECT MONTH(s.createdAt), COUNT(s) FROM School s WHERE YEAR(s.createdAt) = :year GROUP BY MONTH(s.createdAt)")
     List<Object[]> countSchoolsByMonth(@Param("year") int year);
+
+
+    @Query("SELECT YEAR(u.createdAt), COUNT(u) FROM SchoolClass u WHERE u.schoolYear.school.id = :schoolId GROUP BY YEAR(u.createdAt)")
+    List<Object[]> countClassInSchoolByYear(@Param("schoolId") int schoolId);
 }

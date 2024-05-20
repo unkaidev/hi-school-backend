@@ -20,6 +20,8 @@ import phongvan.hischoolbackend.entity.Transcript;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/score")
@@ -29,8 +31,8 @@ public class ScoreController {
     @Autowired
     NotificationRepository notificationRepository;
 
-    @GetMapping("/read")
-    public ResponseEntity<MessageResponse> getScoreWithPagination(@RequestParam int page, @RequestParam int limit, @RequestParam int semesterId, @RequestParam int studentId) {
+    @GetMapping("/read-for-student")
+    public ResponseEntity<MessageResponse> getScoreWithPaginationForStudent(@RequestParam int page, @RequestParam int limit, @RequestParam int semesterId, @RequestParam int studentId) {
 
         Page<Score> scorePage = null;
         try {
@@ -80,6 +82,23 @@ public class ScoreController {
         }
 
     }
+    @GetMapping("/count-all-evaluation")
+    public ResponseEntity<MessageResponse> countAllEvaluationInClass(@RequestParam int yearId, @RequestParam int classId) {
+
+        Map<String,Integer> result = new HashMap<>();
+        try {
+            result = scoreService.countAllEvaluationInClassByYear(yearId, classId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", result));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+
+    }
 
     @Transactional
     @PutMapping("/update")
@@ -102,7 +121,7 @@ public class ScoreController {
             Notification newNotification = Notification.builder()
                     .sender(scoreFind.getTeacher().getUser())
                     .receiver(scoreFind.getStudent().getUser())
-                    .content("Có cập nhật điểm mới môn: " + scoreFind.getSubject())
+                    .content("Có cập nhật điểm mới môn: " + scoreFind.getSubject().getName())
                     .isRead(false)
                     .build();
             notificationRepository.save(newNotification);

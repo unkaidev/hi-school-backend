@@ -3,18 +3,31 @@ package phongvan.hischoolbackend.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import phongvan.hischoolbackend.Repository.SchoolRepository;
-import phongvan.hischoolbackend.entity.School;
+import phongvan.hischoolbackend.Repository.*;
+import phongvan.hischoolbackend.entity.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class SchoolService {
     @Autowired
     SchoolRepository schoolRepository;
+    @Autowired
+    YearRepository yearRepository;
+    @Autowired
+    SubjectRepository subjectRepository;
+    @Autowired
+    ScheduleRepository scheduleRepository;
+    @Autowired
+    SemesterRepository semesterRepository;
+    @Autowired
+    SchoolClassRepository schoolClassRepository;
+    @Autowired
+    TranscriptRepository transcriptRepository;
+    @Autowired
+    StudentRepository studentRepository;
+    @Autowired
+    UserRepository userRepository;
 
     public Optional<School> aSchool(String name) {
         return schoolRepository.findByName(name);
@@ -76,10 +89,108 @@ public class SchoolService {
     }
 
     public School findALatestSchool() {
-        return  schoolRepository.findFirstByOrderByCreatedAtDesc();
+        return schoolRepository.findFirstByOrderByCreatedAtDesc();
     }
 
     public List<Object[]> countSchoolsByMonth(int year) {
         return schoolRepository.countSchoolsByMonth(year);
+    }
+
+    public List<Object[]> countClassInSchoolByYear(int schoolId) {
+        return schoolRepository.countClassInSchoolByYear(schoolId);
+    }
+
+    public int countAllYearsInSchool(int schoolId) {
+        List<SchoolYear> years = yearRepository.findAllBySchool_Id(schoolId, Sort.by(Sort.Direction.DESC, "id"));
+        return years.size();
+    }
+
+    public int countAllSemestersInSchool(int schoolId) {
+        List<SchoolYear> years = yearRepository.findAllBySchool_Id(schoolId, Sort.by(Sort.Direction.DESC, "id"));
+        List<Semester> semesters = new ArrayList<>();
+        for (SchoolYear schoolYear : years
+        ) {
+            semesters.addAll(semesterRepository.findAllBySchoolYear(schoolYear, Sort.by(Sort.Direction.DESC, "id")));
+        }
+        return semesters.size();
+    }
+
+    public int countAllSchedulesInSchool(int schoolId) {
+        List<SchoolYear> years = yearRepository.findAllBySchool_Id(schoolId, Sort.by(Sort.Direction.DESC, "id"));
+        List<Semester> semesters = new ArrayList<>();
+        for (SchoolYear schoolYear : years
+        ) {
+            semesters.addAll(semesterRepository.findAllBySchoolYear(schoolYear, Sort.by(Sort.Direction.DESC, "id")));
+        }
+        Collection<Schedule> schedules = new ArrayList<>();
+        for (Semester semester : semesters
+        ) {
+            schedules.addAll(scheduleRepository.findAllBySemester(semester, Sort.by(Sort.Direction.DESC, "id")));
+        }
+        return schedules.size();
+    }
+
+    public int countAllSubjectsInSchool(int schoolId) {
+        List<SchoolYear> years = yearRepository.findAllBySchool_Id(schoolId, Sort.by(Sort.Direction.DESC, "id"));
+        List<Semester> semesters = new ArrayList<>();
+        for (SchoolYear schoolYear : years
+        ) {
+            semesters.addAll(semesterRepository.findAllBySchoolYear(schoolYear, Sort.by(Sort.Direction.DESC, "id")));
+        }
+        Collection<Subject> subjects = new ArrayList<>();
+        for (Semester semester : semesters
+        ) {
+            subjects.addAll(subjectRepository.findAllBySemester(semester, Sort.by(Sort.Direction.DESC, "id")));
+        }
+        return subjects.size();
+    }
+
+    public int countAllStudentsInSchool(int schoolId) {
+        List<User> users = userRepository.findAllBySchool_Id(schoolId);
+        users.removeIf(user -> user.getStudent() == (null));
+        return users.size();
+    }
+
+    public int countAllTeachersInSchool(int schoolId) {
+        List<User> users = userRepository.findAllBySchool_Id(schoolId);
+        users.removeIf(user -> user.getTeacher() == (null));
+        return users.size();
+    }
+
+    public int countAllClassInSchool(int schoolId) {
+        List<SchoolYear> years = yearRepository.findAllBySchool_Id(schoolId, Sort.by(Sort.Direction.DESC, "id"));
+        List<SchoolClass> schoolClasses = new ArrayList<>();
+        for (SchoolYear schoolYear : years
+        ) {
+            schoolClasses.addAll(schoolClassRepository.findAllBySchoolYear(schoolYear, Sort.by(Sort.Direction.DESC, "id")));
+        }
+        return schoolClasses.size();
+    }
+
+    public int countAllTranscriptsInSchool(int schoolId) {
+        List<SchoolYear> years = yearRepository.findAllBySchool_Id(schoolId, Sort.by(Sort.Direction.DESC, "id"));
+        List<Transcript> transcripts = new ArrayList<>();
+        for (SchoolYear schoolYear : years
+        ) {
+            transcripts.addAll(transcriptRepository.findAllBySchoolYear(schoolYear, Sort.by(Sort.Direction.DESC, "id")));
+        }
+        return transcripts.size();
+    }
+
+    public int countAllStudentsInSchoolByYearAndGrade(int schoolId, int year, String grade) {
+        List<SchoolYear> years = yearRepository.findAllBySchool_Id(schoolId, Sort.by(Sort.Direction.DESC, "id"));
+        List<SchoolClass> schoolClasses = new ArrayList<>();
+        for (SchoolYear schoolYear : years
+        ) {
+            if (schoolYear.getId() == year) {
+                schoolClasses.addAll(schoolClassRepository.findAllBySchoolYear_IdAndGrade(schoolYear.getId(), grade, Sort.by(Sort.Direction.DESC, "id")));
+            }
+        }
+        Collection<Student> students = new ArrayList<>();
+        for (SchoolClass schoolClass: schoolClasses
+             ) {
+            students.addAll(schoolClass.getStudents());
+        }
+        return students.size();
     }
 }

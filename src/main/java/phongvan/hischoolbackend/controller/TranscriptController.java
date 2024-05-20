@@ -41,6 +41,23 @@ public class TranscriptController {
         }
 
     }
+    @GetMapping("/read-by-semester")
+    public ResponseEntity<MessageResponse> getTranscriptWithPaginationBySemester(@RequestParam int page, @RequestParam int limit, @RequestParam int semesterId) {
+
+        Page<Transcript> transcripts = null;
+        try {
+            transcripts = transcriptService.findPaginatedFromSemester(semesterId, PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "id")));
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", transcripts));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+
+    }
     @GetMapping("student/read")
     public ResponseEntity<MessageResponse> getTranscriptWithPaginationForStudent(@RequestParam int page, @RequestParam int limit, @RequestParam int semesterId,@RequestParam String username) {
 

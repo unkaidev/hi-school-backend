@@ -305,6 +305,7 @@ public class SchoolClassController {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity
                     .ok()
                     .body(new MessageResponse(-1, "Error: Create SchoolClass", null));

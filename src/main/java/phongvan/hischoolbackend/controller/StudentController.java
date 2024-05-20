@@ -146,7 +146,7 @@ public class StudentController {
             addressRepository.save(newContactAddress);
             String newParentFirstName = studentRequest.getParent().getFirstName().toUpperCase();
             String newParentLastName = studentRequest.getParent().getLastName().toUpperCase();
-            Integer schoolId = studentRequest.getUser().getSchool().getId();
+            Integer schoolId = studentRequest.getUser().getSchoolId();
             School newSchool = schoolRepository.getById(schoolId);
 
             Parent newParent = Parent.builder()
@@ -194,6 +194,7 @@ public class StudentController {
             return ResponseEntity.ok(new MessageResponse(0, "Create New Student successfully!", null));
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok(new MessageResponse(-1, "Error: Create New Student!", null));
         }
 

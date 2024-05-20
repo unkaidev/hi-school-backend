@@ -80,6 +80,23 @@ public class UserController {
                     .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
         }
     }
+    @GetMapping("/{schoolId}/count-by-year")
+    public ResponseEntity<MessageResponse> countUsersInSchoolByYear(@PathVariable int schoolId) {
+
+        List<Object[]> data = null;
+        try {
+            data = userService.countUsersInSchoolByYear(schoolId);
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(0, "Get Data Success", data));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .ok()
+                    .body(new MessageResponse(-1, "Some Thing Went Wrong In Server", null));
+        }
+    }
+
     @GetMapping("/count-notification")
     public ResponseEntity<MessageResponse> countNumberNotificationsUnRead(@RequestParam String username) {
 

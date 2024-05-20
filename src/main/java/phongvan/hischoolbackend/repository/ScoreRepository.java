@@ -17,4 +17,6 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
     List<Score> findAllBySemester(Semester semester);
 
     List<Score> findAllBySemesterAndStudentAndTeacher(Semester semester, Student student, Teacher teacher);
+
+    Score findByStudentAndSubjectAndTeacherAndSemester(Student studentToRemove, Subject subject, Teacher teacher, Semester semester);
 }

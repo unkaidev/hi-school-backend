@@ -45,8 +45,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT MONTH(s.createdAt), COUNT(s) FROM User s WHERE YEAR(s.createdAt) = :year GROUP BY MONTH(s.createdAt)")
     List<Object[]> countUsersByMonth(@Param("year") int year);
 
-
-    Optional<User> findFirstBySchoolOrderByCreatedAtDesc(School school);
+    @Query("SELECT YEAR(u.createdAt), COUNT(u) FROM User u WHERE u.school.id = :schoolId GROUP BY YEAR(u.createdAt)")
+    List<Object[]> countUsersInSchoolByYear(@Param("schoolId") int schoolId);
 
     List<User> findAllByRoles_NameAndSchool_IdAndCreatedAtBetween(ERole eRole, Integer id, Date time, Date time1);
 }

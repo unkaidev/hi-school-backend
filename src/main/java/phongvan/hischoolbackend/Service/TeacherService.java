@@ -174,7 +174,8 @@ public class TeacherService {
     public Teacher findALatestTeacher(String username) {
         User user = userRepository.findByUsername(username).orElse(null);
         assert user != null;
-        User userFind =  userRepository.findFirstBySchoolOrderByCreatedAtDesc(user.getSchool()).orElse(null);
+        List<User> user_teachers = userRepository.findAllByRoles_NameAndSchool_Id(ERole.ROLE_TEACHER, user.getSchool().getId(), Sort.by(Sort.Direction.DESC, "id"));
+        User userFind = user_teachers.get(0);
         assert userFind != null;
         return userFind.getTeacher();
     }

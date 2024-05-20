@@ -6,15 +6,15 @@ import org.springframework.stereotype.Service;
 import phongvan.hischoolbackend.Repository.*;
 import phongvan.hischoolbackend.entity.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ScoreService {
     @Autowired
     ScoreRepository scoreRepository;
+    @Autowired
+    SchoolClassRepository schoolClassRepository;
     @Autowired
     StudentRepository studentRepository;
     @Autowired
@@ -118,4 +118,56 @@ public class ScoreService {
         return subjectEvaluation;
     }
 
+    public Map<String, Integer> countAllEvaluationInClassByYear(int yearId, int classId) {
+        Map<String, Integer> evaluationCounts = new HashMap<>();
+        SchoolClass schoolClass = schoolClassRepository.findById(classId).orElse(null);
+        List<Semester> semesters = semesterRepository.findAllBySchoolYear_Id(yearId, Sort.by(Sort.Direction.DESC, "id"));
+
+        int excellent = 0;
+        int good = 0;
+        int average = 0;
+        int below_average = 0;
+
+        Set<Student> uniqueStudents = new HashSet<>();
+
+        for (Semester semester : semesters) {
+            assert schoolClass != null;
+
+            for (Student student : schoolClass.getStudents()) {
+                if (uniqueStudents.contains(student)) {
+                    continue;
+                }
+
+                List<Score> scores = scoreRepository.findAllBySemesterAndStudent(semester,student);
+
+                double total_score = 0.0;
+                int total_subjects = scores.size();
+
+                for (Score score : scores) {
+                    total_score += score.getSubjectScore();
+                }
+
+                double averageScore = total_subjects > 0 ? total_score / total_subjects : 0.0;
+
+                if (averageScore >= 8.5) {
+                    excellent++;
+                } else if (averageScore >= 6.5) {
+                    good++;
+                } else if (averageScore >= 5) {
+                    average++;
+                } else {
+                    below_average++;
+                }
+
+                uniqueStudents.add(student);
+            }
+        }
+
+        evaluationCounts.put("excellent", excellent);
+        evaluationCounts.put("good", good);
+        evaluationCounts.put("average", average);
+        evaluationCounts.put("below_average", below_average);
+
+        return evaluationCounts;
+    }
 }

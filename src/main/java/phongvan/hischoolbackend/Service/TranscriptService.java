@@ -6,10 +6,7 @@ import org.springframework.stereotype.Service;
 import phongvan.hischoolbackend.Repository.*;
 import phongvan.hischoolbackend.entity.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class TranscriptService {
@@ -79,6 +76,44 @@ public class TranscriptService {
                transcripts.add(transcript);
            }
        }
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        List<Transcript> list;
+
+        if (transcripts.size() < startItem) {
+            list = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, transcripts.size());
+            list = transcripts.subList(startItem, toIndex);
+        }
+
+        PageRequest pageRequest = PageRequest.of(currentPage, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Transcript> transcriptPage = new PageImpl<>(list, pageRequest, transcripts.size());
+        return transcriptPage;
+    }
+
+    public Page<Transcript> findPaginatedFromSemester(int semesterId, PageRequest pageable) {
+        List<Transcript> transcripts = new ArrayList<>();
+        Semester semester = semesterRepository.findById(semesterId).orElse(null);
+        assert semester != null;
+        List<SchoolClass> schoolClasses = schoolClassRepository.findAllBySchoolYear_Id(semester.getSchoolYear().getId(),Sort.by(Sort.Direction.DESC, "id"));
+        Collection<Student> students = new HashSet<>();
+        for (SchoolClass schoolClass:schoolClasses
+             ) {
+            students.addAll(schoolClass.getStudents());
+        }
+
+        if (semester != null) {
+            SchoolYear schoolYear = semester.getSchoolYear();
+            for (Student student : students
+            ) {
+                Transcript transcript = transcriptRepository.findByStudentAndSchoolYear(student,schoolYear);
+                transcripts.add(transcript);
+            }
+        }
+
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
